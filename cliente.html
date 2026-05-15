@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Área do Cliente | Sala 02</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #071f3d, #020914);
+      color: #fff;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 28px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      background: #f4efe7;
+      color: #071f3d;
+      border-radius: 34px;
+      padding: 42px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+    }
+
+    .logo {
+      font-size: 34px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #475569;
+      line-height: 1.5;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px;
+      margin-bottom: 14px;
+      border-radius: 18px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+      outline: none;
+      background: #fff;
+    }
+
+    input:focus {
+      border-color: #d7a85e;
+      box-shadow: 0 0 0 4px rgba(215, 168, 94, 0.22);
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 999px;
+      background: #071f3d;
+      color: #fff;
+      font-weight: 900;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.25s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 35px rgba(7, 31, 61, 0.35);
+    }
+
+    .create-account,
+    .back-home,
+    .forgot-password {
+      display: block;
+      text-align: center;
+      margin-top: 18px;
+      color: #071f3d;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .back-home,
+    .forgot-password {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .message {
+      display: none;
+      margin-bottom: 16px;
+      padding: 14px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .message.error {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .message.success {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .dashboard {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: rgba(244, 239, 231, 0.96);
+      color: #071f3d;
+      padding: 18px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar strong {
+      font-size: 26px;
+      font-weight: 900;
+    }
+
+    .topbar p {
+      color: #475569;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .logout {
+      width: auto;
+      background: #d7a85e;
+      color: #071f3d;
+      padding: 12px 22px;
+    }
+
+    .container {
+      padding: 45px 8%;
+    }
+
+    .welcome {
+      margin-bottom: 28px;
+    }
+
+    .welcome h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    .welcome p {
+      color: #cbd5e1;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+      margin-bottom: 30px;
+    }
+
+    .summary-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 28px;
+      padding: 26px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+    }
+
+    .summary-card span {
+      color: #d7a85e;
+      font-weight: 900;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .summary-card h3 {
+      margin-top: 10px;
+      font-size: 23px;
+      word-break: break-word;
+    }
+
+    .btn-email {
+      margin-top: 16px;
+      padding: 12px 18px;
+      font-size: 13px;
+      background: #d7a85e;
+      color: #071f3d;
+    }
+
+    .section-card {
+      background: #f4efe7;
+      color: #071f3d;
+      border-radius: 34px;
+      padding: 32px;
+      margin-bottom: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    .section-card h2 {
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    .processo {
+      background: #fff;
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 18px;
+      border-left: 8px solid #d7a85e;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+    }
+
+    .processo h3 {
+      font-size: 23px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .status {
+      display: inline-block;
+      margin: 10px 0;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #071f3d;
+      color: white;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .timeline {
+      margin-top: 18px;
+      border-left: 3px solid #d7a85e;
+      padding-left: 16px;
+    }
+
+    .timeline p {
+      margin: 10px 0;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    .empty {
+      padding: 24px;
+      border-radius: 22px;
+      background: #fff;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .notice {
+      background: rgba(215, 168, 94, 0.15);
+      border: 1px solid rgba(215, 168, 94, 0.35);
+      padding: 18px;
+      border-radius: 22px;
+      color: #071f3d;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    @media (max-width: 1100px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .welcome h1 {
+        font-size: 32px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+      }
+
+      .logout {
+        width: 100%;
+      }
+
+      .container {
+        padding: 30px 20px;
+      }
+
+      .login-card {
+        padding: 32px 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <section class="login-screen" id="loginScreen">
+    <div class="login-card" id="loginCard">
+      <div class="logo">SALA 02</div>
+
+      <p class="subtitle">
+        Acesse sua área exclusiva para acompanhar o andamento do seu processo em tempo real.
+      </p>
+
+      <div id="mensagem" class="message"></div>
+
+      <input id="cpf" placeholder="Digite seu CPF">
+      <input id="senha" type="password" placeholder="Digite sua senha">
+
+      <button id="btnEntrar" onclick="entrar()">Acessar minha área</button>
+
+      <a href="cadastro.html" class="create-account">
+        Primeiro acesso? Criar minha conta
+      </a>
+
+      <a href="redefinir-senha.html" class="forgot-password">
+        Esqueci minha senha
+      </a>
+
+      <a href="index.html" class="back-home">
+        ← Voltar para a página inicial
+      </a>
+    </div>
+  </section>
+
+  <section class="dashboard" id="dashboard">
+
+    <div class="topbar">
+      <div>
+        <strong>SALA 02</strong>
+        <p>Área do Cliente</p>
+      </div>
+
+      <button class="logout" onclick="sair()">Sair</button>
+    </div>
+
+    <div class="container">
+
+      <div class="welcome">
+        <h1 id="nomeCliente">Olá, cliente</h1>
+        <p>Acompanhe seus processos, documentos, pendências e movimentações.</p>
+      </div>
+
+      <div class="summary-grid">
+
+        <div class="summary-card">
+          <span>Cliente</span>
+          <h3 id="resumoNome">---</h3>
+        </div>
+
+        <div class="summary-card">
+          <span>CPF</span>
+          <h3 id="resumoCpf">---</h3>
+        </div>
+
+        <div class="summary-card">
+          <span>E-mail</span>
+          <h3 id="clienteEmail">---</h3>
+
+          <button class="btn-email" onclick="abrirAlterarEmail()">
+            Alterar e-mail
+          </button>
+        </div>
+
+        <div class="summary-card">
+          <span>Processos</span>
+          <h3 id="totalProcessos">0</h3>
+        </div>
+
+      </div>
+
+      <div class="section-card">
+        <h2>Meus Processos</h2>
+        <div id="listaProcessos"></div>
+      </div>
+
+      <div class="section-card">
+        <h2>Documentos e Pendências</h2>
+        <div class="notice">
+          Área preparada para exibir documentos anexados, documentos pendentes e exigências.
+        </div>
+        <div class="empty">
+          Em breve, você poderá visualizar os documentos enviados e acompanhar pendências diretamente por aqui.
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h2>Notificações</h2>
+        <div class="notice">
+          Sempre que houver movimentação, a atualização aparecerá nesta área.
+        </div>
+        <div class="empty">
+          Próxima etapa: integração com WhatsApp para avisos automáticos.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script>
+    const API = "http://127.0.0.1:3000";
+
+    function limparCpf(cpf) {
+      return String(cpf || "").replace(/\D/g, "");
+    }
+
+    function formatarCpf(cpf) {
+      const n = limparCpf(cpf);
+      if (n.length !== 11) return cpf || "---";
+      return n.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    }
+
+    function mostrarMensagem(texto, tipo = "error") {
+      const mensagem = document.getElementById("mensagem");
+      mensagem.className = "message " + tipo;
+      mensagem.innerText = texto;
+    }
+
+    function limparMensagem() {
+      const mensagem = document.getElementById("mensagem");
+      mensagem.className = "message";
+      mensagem.innerText = "";
+    }
+
+    async function entrar() {
+      const cpf = document.getElementById("cpf").value;
+      const senha = document.getElementById("senha").value;
+      const btn = document.getElementById("btnEntrar");
+      const loginCard = document.getElementById("loginCard");
+
+      limparMensagem();
+
+      if (!cpf || !senha) {
+        mostrarMensagem("Digite CPF e senha para acessar.");
+        return;
+      }
+
+      try {
+        btn.innerText = "Acessando...";
+        loginCard.classList.add("loading");
+
+        const resposta = await fetch(API + "/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cpf, senha })
+        });
+
+        const cliente = await resposta.json();
+
+        if (!resposta.ok || cliente.erro) {
+          mostrarMensagem(cliente.erro || "Erro ao acessar.");
+          return;
+        }
+
+        localStorage.setItem("clienteSala02", JSON.stringify(cliente));
+
+        mostrarMensagem("Acesso liberado. Carregando painel...", "success");
+
+        setTimeout(() => {
+          abrirDashboard(cliente);
+        }, 500);
+
+      } catch (error) {
+        mostrarMensagem("Erro ao conectar com o servidor. Verifique se o backend está rodando.");
+      } finally {
+        btn.innerText = "Acessar minha área";
+        loginCard.classList.remove("loading");
+      }
+    }
+
+    async function abrirDashboard(cliente) {
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+
+      document.getElementById("nomeCliente").innerText = "Olá, " + cliente.nome;
+      document.getElementById("resumoNome").innerText = cliente.nome;
+      document.getElementById("resumoCpf").innerText = formatarCpf(cliente.cpf);
+      document.getElementById("clienteEmail").innerText = cliente.email || "Não cadastrado";
+
+      carregarProcessos(cliente.id);
+    }
+
+    async function carregarProcessos(clienteId) {
+      try {
+        const resposta = await fetch(API + "/processos/" + clienteId);
+        const processos = await resposta.json();
+
+        if (!Array.isArray(processos)) {
+          document.getElementById("listaProcessos").innerHTML = `
+            <div class="empty">Erro ao carregar processos.</div>
+          `;
+          document.getElementById("totalProcessos").innerText = "0";
+          return;
+        }
+
+        document.getElementById("totalProcessos").innerText = processos.length;
+
+        const lista = document.getElementById("listaProcessos");
+
+        if (!processos.length) {
+          lista.innerHTML = `
+            <div class="empty">Nenhum processo cadastrado ainda.</div>
+          `;
+          return;
+        }
+
+        lista.innerHTML = processos.map(p => `
+          <div class="processo">
+            <h3>${p.tipo}</h3>
+            <span class="status">${p.status}</span>
+            <p>${p.descricao}</p>
+
+            <div class="timeline">
+              <p>✅ Processo cadastrado na Sala 02</p>
+              <p>📌 Status atual: <strong>${p.status}</strong></p>
+              <p>🕒 Última atualização: ${p.data}</p>
+            </div>
+          </div>
+        `).join("");
+
+      } catch (error) {
+        document.getElementById("listaProcessos").innerHTML = `
+          <div class="empty">
+            Erro ao carregar processos. Verifique se o servidor está rodando.
+          </div>
+        `;
+      }
+    }
+
+    function abrirAlterarEmail() {
+      const novoEmail = prompt("Digite o novo e-mail:");
+
+      if (!novoEmail) return;
+
+      alterarEmail(novoEmail);
+    }
+
+    async function alterarEmail(email) {
+      const cliente = JSON.parse(localStorage.getItem("clienteSala02"));
+
+      if (!cliente || !cliente.token) {
+        alert("Sessão expirada. Faça login novamente.");
+        sair();
+        return;
+      }
+
+      try {
+        const resposta = await fetch(API + "/meu-email", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + cliente.token
+          },
+          body: JSON.stringify({ email })
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+          alert(dados.erro || "Erro ao atualizar e-mail.");
+          return;
+        }
+
+        cliente.email = dados.email;
+        localStorage.setItem("clienteSala02", JSON.stringify(cliente));
+
+        document.getElementById("clienteEmail").innerText = dados.email;
+
+        alert("E-mail atualizado com sucesso!");
+
+      } catch (erro) {
+        alert("Erro ao conectar com o servidor.");
+      }
+    }
+
+    function sair() {
+      localStorage.removeItem("clienteSala02");
+      location.reload();
+    }
+
+    window.onload = () => {
+      const clienteSalvo = localStorage.getItem("clienteSala02");
+
+      if (clienteSalvo) {
+        abrirDashboard(JSON.parse(clienteSalvo));
+      }
+    };
+  </script>
+
+</body>
+
+</html>

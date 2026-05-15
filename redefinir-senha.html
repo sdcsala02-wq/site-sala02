@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redefinir Senha | Sala 02</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #071f3d, #020914);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #071f3d;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 560px;
+      background: #f4efe7;
+      padding: 60px 52px;
+      border-radius: 42px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+    }
+
+    .login-card h1 {
+      font-size: 46px;
+      font-weight: 900;
+      color: #071f3d;
+      margin-bottom: 18px;
+      letter-spacing: 1px;
+    }
+
+    .login-card p {
+      font-size: 19px;
+      line-height: 1.45;
+      margin-bottom: 34px;
+      color: #071f3d;
+    }
+
+    .login-card input {
+      width: 100%;
+      height: 64px;
+      border-radius: 22px;
+      border: 1px solid #cbd5e1;
+      background: white;
+      padding: 0 22px;
+      font-size: 18px;
+      margin-bottom: 18px;
+      outline: none;
+    }
+
+    .login-card input:focus {
+      border-color: #d7a85e;
+      box-shadow: 0 0 0 3px rgba(215, 168, 94, 0.25);
+    }
+
+    .btn-dark {
+      width: 100%;
+      height: 66px;
+      border: none;
+      border-radius: 999px;
+      background: #071f3d;
+      color: white;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: 0.25s;
+      margin-top: 4px;
+    }
+
+    .btn-dark:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px rgba(7, 31, 61, 0.35);
+    }
+
+    .login-message {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #071f3d;
+      min-height: 22px;
+    }
+
+    .back-link {
+      width: 100%;
+      display: block;
+      text-align: center;
+      margin-top: 24px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 17px;
+      font-weight: 800;
+      transition: 0.25s;
+    }
+
+    .back-link:hover {
+      color: #d7a85e;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 600px) {
+      .login-card {
+        padding: 42px 28px;
+        border-radius: 30px;
+      }
+
+      .login-card h1 {
+        font-size: 38px;
+      }
+
+      .login-card p {
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-card">
+
+    <h1>SALA 02</h1>
+
+    <p>
+      Informe seu CPF, CNPJ ou e-mail cadastrado. Enviaremos um token de segurança
+      para redefinir sua senha.
+    </p>
+
+    <form id="formRecuperarSenha">
+
+      <input type="text" id="identificador" placeholder="Digite seu CPF, CNPJ ou e-mail" required>
+
+      <button type="submit" class="btn-dark">
+        Enviar token de segurança
+      </button>
+
+    </form>
+
+    <p id="mensagem" class="login-message"></p>
+
+    <a href="cliente.html" class="back-link">
+      ← Voltar para o login
+    </a>
+
+  </div>
+
+  <script>
+    const API = "http://127.0.0.1:3000";
+
+    document.getElementById("formRecuperarSenha").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const identificador = document.getElementById("identificador").value.trim();
+      const mensagem = document.getElementById("mensagem");
+
+      mensagem.style.color = "#071f3d";
+      mensagem.innerText = "";
+
+      if (!identificador) {
+        mensagem.innerText = "Informe CPF, CNPJ ou e-mail cadastrado.";
+        return;
+      }
+
+      try {
+        mensagem.innerText = "Enviando token de segurança...";
+
+        const resposta = await fetch(API + "/recuperar-senha", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            identificador
+          })
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok || !dados.sucesso) {
+          mensagem.style.color = "#991b1b";
+          mensagem.innerText = dados.mensagem || dados.erro || "Erro ao enviar token.";
+          return;
+        }
+
+        mensagem.style.color = "#166534";
+        mensagem.innerText = "Token enviado com sucesso. Verifique seu e-mail.";
+
+        setTimeout(() => {
+          window.location.href = "nova-senha.html";
+        }, 2200);
+
+      } catch (erro) {
+        console.log(erro);
+        mensagem.style.color = "#991b1b";
+        mensagem.innerText = "Erro ao conectar com o servidor.";
+      }
+    });
+  </script>
+
+</body>
+
+</html>

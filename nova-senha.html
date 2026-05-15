@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Senha | Sala 02</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="login-page">
+
+  <div class="login-card">
+    <h1>SALA 02</h1>
+
+    <p>
+      Digite o token recebido e cadastre sua nova senha de acesso.
+    </p>
+
+    <form id="formNovaSenha">
+      <input type="text" id="token" placeholder="Digite o token de segurança" required>
+
+      <input type="password" id="novaSenha" placeholder="Digite sua nova senha" required>
+
+      <input type="password" id="confirmarSenha" placeholder="Confirme sua nova senha" required>
+
+      <button type="submit" class="btn-dark">
+        Redefinir senha
+      </button>
+    </form>
+
+    <p id="mensagem" class="login-message"></p>
+
+    <a href="cliente.html" class="back-link">
+      ← Voltar para o login
+    </a>
+  </div>
+
+  <script>
+    document.getElementById("formNovaSenha").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const token = document.getElementById("token").value;
+      const novaSenha = document.getElementById("novaSenha").value;
+      const confirmarSenha = document.getElementById("confirmarSenha").value;
+      const mensagem = document.getElementById("mensagem");
+
+      if (novaSenha !== confirmarSenha) {
+        mensagem.innerText = "As senhas não conferem.";
+        return;
+      }
+
+      try {
+        const resposta = await fetch("http://localhost:3000/redefinir-senha", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ token, novaSenha })
+        });
+
+        const dados = await resposta.json();
+
+        if (dados.sucesso) {
+          mensagem.innerText = "Senha redefinida com sucesso.";
+          setTimeout(() => {
+            window.location.href = "cliente.html";
+          }, 2000);
+        } else {
+          mensagem.innerText = dados.mensagem || "Token inválido ou expirado.";
+        }
+
+      } catch (erro) {
+        mensagem.innerText = "Erro ao conectar com o servidor.";
+      }
+    });
+  </script>
+
+</body>
+
+</html>

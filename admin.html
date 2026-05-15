@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel CEO | Sala 02</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #071f3d;
+      color: white;
+      min-height: 100vh;
+    }
+
+    .login-ceo {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #071f3d, #020914);
+      padding: 30px;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      background: #f4efe7;
+      color: #071f3d;
+      padding: 42px;
+      border-radius: 30px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+    }
+
+    .login-box h1 {
+      font-size: 34px;
+      margin-bottom: 10px;
+    }
+
+    .login-box p {
+      color: #475569;
+      margin-bottom: 26px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 14px;
+      border-radius: 14px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+      outline: none;
+    }
+
+    button {
+      padding: 14px 22px;
+      border: none;
+      border-radius: 999px;
+      background: #d7a85e;
+      color: #071f3d;
+      font-weight: 900;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(215, 168, 94, 0.35);
+    }
+
+    .btn-dark {
+      background: #071f3d;
+      color: white;
+      width: 100%;
+    }
+
+    .dashboard {
+      display: none;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 270px 1fr;
+      min-height: 100vh;
+    }
+
+    aside {
+      background: #020914;
+      padding: 28px;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    aside h1 {
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+
+    aside h1 span {
+      color: #d7a85e;
+    }
+
+    aside p {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .menu button {
+      width: 100%;
+      margin-bottom: 12px;
+      background: transparent;
+      color: white;
+      text-align: left;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .menu button.active,
+    .menu button:hover {
+      background: #d7a85e;
+      color: #071f3d;
+    }
+
+    main {
+      padding: 35px;
+      background: linear-gradient(135deg, #071f3d, #09294d);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .topbar h2 {
+      font-size: 34px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .metric {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .metric small {
+      color: #d7a85e;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .metric h3 {
+      font-size: 36px;
+      margin-top: 10px;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .panel {
+      background: #f4efe7;
+      color: #071f3d;
+      padding: 30px;
+      border-radius: 28px;
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
+      margin-bottom: 24px;
+    }
+
+    .panel h3 {
+      font-size: 26px;
+      margin-bottom: 18px;
+    }
+
+    .cliente-card,
+    .processo-card {
+      background: white;
+      border-left: 7px solid #d7a85e;
+      padding: 20px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+
+    .cliente-card strong,
+    .processo-card strong {
+      font-size: 20px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .cliente-card small,
+    .processo-card small {
+      color: #64748b;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 8px 14px;
+      background: #071f3d;
+      color: white;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 900;
+      margin: 10px 0;
+    }
+
+    .empty {
+      background: white;
+      padding: 22px;
+      border-radius: 20px;
+      color: #64748b;
+    }
+
+    .two-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        height: auto;
+        position: relative;
+      }
+
+      .metrics,
+      .two-cols {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <section class="login-ceo" id="loginCeo">
+    <div class="login-box">
+      <h1>SALA 02</h1>
+
+      <p>
+        Acesse sua área exclusiva para gerenciar clientes, processos e movimentações em tempo real.
+      </p>
+
+      <input id="ceoUser" placeholder="Digite seu usuário">
+      <input id="ceoSenha" type="password" placeholder="Digite sua senha">
+
+      <button type="button" class="btn-dark" onclick="entrarCEO()">
+        Entrar no Painel CEO
+      </button>
+
+      <div class="login-links">
+
+        <a href="redefinir-senha-admin.html" class="forgot-password">
+          Esqueci minha senha
+        </a>
+
+      </div>
+
+      <a href="index.html" class="back-link">
+        ← Voltar para a página inicial
+      </a>
+
+    </div>
+  </section>
+
+  <section class="dashboard" id="dashboard">
+    <div class="layout">
+
+      <aside>
+        <h1>SALA <span>02</span></h1>
+        <p>Painel CEO / Gestão Operacional</p>
+
+        <div class="menu">
+          <button class="active" onclick="abrirPagina('dashboardPage', this)">📊 Dashboard</button>
+          <button onclick="abrirPagina('clientesPage', this)">👥 Clientes</button>
+          <button onclick="abrirPagina('novoProcessoPage', this)">📄 Novo Processo</button>
+          <button onclick="abrirPagina('processosPage', this)">🔎 Processos</button>
+          <button onclick="sairCEO()">🚪 Sair</button>
+        </div>
+      </aside>
+
+      <main>
+        <div class="topbar">
+          <div>
+            <h2>Painel CEO</h2>
+            <p>Gestão de clientes, processos e movimentações.</p>
+          </div>
+        </div>
+
+        <section id="dashboardPage" class="page active">
+          <div class="metrics">
+            <div class="metric">
+              <small>Clientes</small>
+              <h3 id="totalClientes">0</h3>
+            </div>
+
+            <div class="metric">
+              <small>Processos</small>
+              <h3 id="totalProcessos">0</h3>
+            </div>
+
+            <div class="metric">
+              <small>Sistema</small>
+              <h3>Ativo</h3>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Resumo Operacional</h3>
+            <p>Use o menu lateral para cadastrar clientes, criar processos e consultar movimentações.</p>
+          </div>
+        </section>
+
+        <section id="clientesPage" class="page">
+          <div class="two-cols">
+            <div class="panel">
+              <h3>Cadastrar Cliente</h3>
+              <input id="nome" placeholder="Nome completo">
+              <input id="cpf" placeholder="CPF">
+              <input id="senha" type="password" placeholder="Senha do cliente">
+              <button onclick="cadastrarCliente()">Cadastrar cliente</button>
+            </div>
+
+            <div class="panel">
+              <h3>Clientes Cadastrados</h3>
+              <div id="listaClientes"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="novoProcessoPage" class="page">
+          <div class="panel">
+            <h3>Criar Processo</h3>
+
+            <select id="clienteSelect">
+              <option value="">Selecione um cliente</option>
+            </select>
+
+            <input id="tipo" placeholder="Tipo do processo. Ex: Inscrição Municipal">
+
+            <select id="status">
+              <option>Recebido</option>
+              <option>Em análise documental</option>
+              <option>Aguardando documento</option>
+              <option>Protocolado</option>
+              <option>Em andamento</option>
+              <option>Em exigência</option>
+              <option>Concluído</option>
+            </select>
+
+            <input id="descricao" placeholder="Descrição / movimentação">
+
+            <button onclick="criarProcesso()">Criar processo</button>
+          </div>
+        </section>
+
+        <section id="processosPage" class="page">
+          <div class="panel">
+            <h3>Consultar Processos</h3>
+
+            <select id="clienteBusca" onchange="buscarProcessos()">
+              <option value="">Selecione um cliente para consultar</option>
+            </select>
+
+            <div id="resultadoProcessos" style="margin-top:20px;"></div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </section>
+
+  <script>
+    const API = "http://localhost:3000";
+
+    function getTokenCEO() {
+      return localStorage.getItem("ceoToken");
+    }
+
+    function headersCEO() {
+      return {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + getTokenCEO()
+      };
+    }
+
+    async function entrarCEO() {
+      const usuario = document.getElementById("ceoUser").value.trim();
+      const senha = document.getElementById("ceoSenha").value.trim();
+
+      try {
+        const resposta = await fetch(API + "/login-ceo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            usuario: usuario,
+            senha: senha
+          })
+        });
+
+        const data = await resposta.json();
+
+        if (!resposta.ok) {
+          alert(data.erro || "Usuário ou senha inválidos.");
+          return;
+        }
+
+        localStorage.setItem("ceoToken", data.token);
+        abrirPainel();
+
+      } catch (erro) {
+        console.log("ERRO REAL:", erro);
+        alert("Erro ao conectar com o servidor. Verifique se o server.js está rodando.");
+      }
+    }
+
+    function abrirPainel() {
+      document.getElementById("loginCeo").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+      carregarClientes();
+      carregarTotalProcessos();
+    }
+
+    function sairCEO() {
+      localStorage.removeItem("ceoToken");
+      location.reload();
+    }
+
+    function abrirPagina(id, botao) {
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+
+      document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
+      botao.classList.add("active");
+
+      if (id === "clientesPage") {
+        carregarClientes();
+      }
+
+      if (id === "dashboardPage") {
+        carregarClientes();
+        carregarTotalProcessos();
+      }
+    }
+
+    function limparCpf(cpf) {
+      return String(cpf || "").replace(/\D/g, "");
+    }
+
+    function formatarCpf(cpf) {
+      const n = limparCpf(cpf);
+      if (n.length !== 11) return cpf || "";
+      return n.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    }
+
+    async function cadastrarCliente() {
+      const nome = document.getElementById("nome").value;
+      const cpf = document.getElementById("cpf").value;
+      const senha = document.getElementById("senha").value;
+
+      if (!nome || !cpf || !senha) {
+        alert("Preencha nome, CPF e senha.");
+        return;
+      }
+
+      try {
+        const resposta = await fetch(API + "/clientes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nome, cpf, senha })
+        });
+
+        const data = await resposta.json();
+
+        if (data.id) {
+          alert("Cliente cadastrado com sucesso.");
+
+          document.getElementById("nome").value = "";
+          document.getElementById("cpf").value = "";
+          document.getElementById("senha").value = "";
+
+          carregarClientes();
+        } else {
+          alert(data.erro || "Erro ao cadastrar cliente.");
+        }
+      } catch (error) {
+        alert("Erro ao conectar com o servidor.");
+        console.log(error);
+      }
+    }
+
+    async function carregarClientes() {
+      const token = getTokenCEO();
+
+      if (!token) {
+        sairCEO();
+        return;
+      }
+
+      try {
+        const resposta = await fetch(API + "/clientes", {
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + token
+          }
+        });
+
+        const clientes = await resposta.json();
+
+        if (!Array.isArray(clientes)) {
+          console.log("Erro ao carregar clientes:", clientes);
+          document.getElementById("totalClientes").innerText = "0";
+          document.getElementById("listaClientes").innerHTML =
+            `<div class="empty">Erro ao carregar clientes. Faça login novamente.</div>`;
+          return;
+        }
+
+        document.getElementById("totalClientes").innerText = clientes.length;
+
+        const lista = document.getElementById("listaClientes");
+        const selectCriar = document.getElementById("clienteSelect");
+        const selectBusca = document.getElementById("clienteBusca");
+
+        selectCriar.innerHTML = `<option value="">Selecione um cliente</option>`;
+        selectBusca.innerHTML = `<option value="">Selecione um cliente para consultar</option>`;
+
+        if (!clientes.length) {
+          lista.innerHTML = `<div class="empty">Nenhum cliente cadastrado.</div>`;
+          return;
+        }
+
+        lista.innerHTML = clientes.map(c => `
+          <div class="cliente-card">
+            <strong>${c.nome}</strong>
+            <small>ID: ${c.id} | CPF: ${formatarCpf(c.cpf)}</small>
+
+            <div class="actions">
+              <button onclick="selecionarCliente(${c.id})">Criar processo</button>
+              <button onclick="consultarCliente(${c.id})">Ver processos</button>
+            </div>
+          </div>
+        `).join("");
+
+        clientes.forEach(c => {
+          const opt1 = document.createElement("option");
+          opt1.value = c.id;
+          opt1.textContent = `${c.nome} - CPF: ${formatarCpf(c.cpf)}`;
+          selectCriar.appendChild(opt1);
+
+          const opt2 = document.createElement("option");
+          opt2.value = c.id;
+          opt2.textContent = `${c.nome} - CPF: ${formatarCpf(c.cpf)}`;
+          selectBusca.appendChild(opt2);
+        });
+      } catch (error) {
+        console.log(error);
+        document.getElementById("totalClientes").innerText = "0";
+        document.getElementById("listaClientes").innerHTML =
+          `<div class="empty">Erro ao conectar com o servidor.</div>`;
+      }
+    }
+
+    async function carregarTotalProcessos() {
+      const token = getTokenCEO();
+
+      if (!token) return;
+
+      try {
+        const resposta = await fetch(API + "/processos", {
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + token
+          }
+        });
+
+        const processos = await resposta.json();
+
+        if (Array.isArray(processos)) {
+          document.getElementById("totalProcessos").innerText = processos.length;
+        } else {
+          document.getElementById("totalProcessos").innerText = "0";
+        }
+      } catch (error) {
+        console.log(error);
+        document.getElementById("totalProcessos").innerText = "0";
+      }
+    }
+
+    function selecionarCliente(id) {
+      document.getElementById("clienteSelect").value = id;
+      abrirPagina("novoProcessoPage", document.querySelectorAll(".menu button")[2]);
+    }
+
+    function consultarCliente(id) {
+      document.getElementById("clienteBusca").value = id;
+      abrirPagina("processosPage", document.querySelectorAll(".menu button")[3]);
+      buscarProcessos();
+    }
+
+    async function criarProcesso() {
+      const cliente_id = document.getElementById("clienteSelect").value;
+      const tipo = document.getElementById("tipo").value;
+      const status = document.getElementById("status").value;
+      const descricao = document.getElementById("descricao").value;
+
+      if (!cliente_id || !tipo || !status || !descricao) {
+        alert("Preencha todos os dados do processo.");
+        return;
+      }
+
+      try {
+        const resposta = await fetch(API + "/processos", {
+          method: "POST",
+          headers: headersCEO(),
+          body: JSON.stringify({ cliente_id, tipo, status, descricao })
+        });
+
+        const data = await resposta.json();
+
+        if (data.id) {
+          alert("Processo criado com sucesso.");
+
+          document.getElementById("tipo").value = "";
+          document.getElementById("descricao").value = "";
+
+          document.getElementById("clienteBusca").value = cliente_id;
+          abrirPagina("processosPage", document.querySelectorAll(".menu button")[3]);
+          buscarProcessos();
+          carregarTotalProcessos();
+        } else {
+          alert(data.erro || "Erro ao criar processo.");
+        }
+      } catch (error) {
+        alert("Erro ao conectar com o servidor.");
+        console.log(error);
+      }
+    }
+
+    async function buscarProcessos() {
+      const clienteId = document.getElementById("clienteBusca").value;
+      const resultado = document.getElementById("resultadoProcessos");
+
+      if (!clienteId) {
+        resultado.innerHTML = "";
+        carregarTotalProcessos();
+        return;
+      }
+
+      try {
+        const resposta = await fetch(API + "/processos/" + clienteId);
+        const processos = await resposta.json();
+
+        if (!Array.isArray(processos)) {
+          resultado.innerHTML = `<div class="empty">Erro ao buscar processos.</div>`;
+          return;
+        }
+
+        if (!processos.length) {
+          resultado.innerHTML = `<div class="empty">Nenhum processo cadastrado para este cliente.</div>`;
+          return;
+        }
+
+        resultado.innerHTML = processos.map(p => `
+          <div class="processo-card">
+            <strong>${p.tipo}</strong>
+
+            <span class="status">${p.status}</span>
+
+            <p>${p.descricao}</p>
+
+            <small>Atualizado em: ${p.data}</small>
+
+            <div style="margin-top:12px;">
+              <select id="status_${p.id}">
+                <option ${p.status === "Recebido" ? "selected" : ""}>Recebido</option>
+                <option ${p.status === "Em análise documental" ? "selected" : ""}>Em análise documental</option>
+                <option ${p.status === "Aguardando documento" ? "selected" : ""}>Aguardando documento</option>
+                <option ${p.status === "Protocolado" ? "selected" : ""}>Protocolado</option>
+                <option ${p.status === "Em andamento" ? "selected" : ""}>Em andamento</option>
+                <option ${p.status === "Em exigência" ? "selected" : ""}>Em exigência</option>
+                <option ${p.status === "Concluído" ? "selected" : ""}>Concluído</option>
+              </select>
+
+              <button onclick="atualizarStatus(${p.id})">
+                Atualizar Status
+              </button>
+            </div>
+          </div>
+        `).join("");
+
+      } catch (error) {
+        console.log(error);
+        resultado.innerHTML = `<div class="empty">Erro ao conectar com o servidor.</div>`;
+      }
+    }
+
+    async function atualizarStatus(id) {
+      const novoStatus = document.getElementById("status_" + id).value;
+
+      try {
+        const resposta = await fetch(API + "/processos/" + id, {
+          method: "PUT",
+          headers: headersCEO(),
+          body: JSON.stringify({ status: novoStatus })
+        });
+
+        const data = await resposta.json();
+
+        if (!resposta.ok) {
+          alert(data.erro || "Erro ao atualizar status.");
+          return;
+        }
+
+        alert("Status atualizado com sucesso!");
+
+        buscarProcessos();
+        carregarTotalProcessos();
+
+      } catch (error) {
+        alert("Erro ao conectar com o servidor.");
+        console.log(error);
+      }
+    }
+
+    window.onload = () => {
+      const token = localStorage.getItem("ceoToken");
+
+      if (token) {
+        abrirPainel();
+      }
+    };
+  </script>
+
+</body>
+
+</html>

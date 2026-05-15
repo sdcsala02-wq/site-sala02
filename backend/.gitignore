@@ -7,3 +7,4 @@ backend/database.db
 uploads
 .wwebjs_auth
 session
+*.mp4

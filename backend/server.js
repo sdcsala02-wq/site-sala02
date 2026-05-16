@@ -14,6 +14,11 @@ const nodemailer = require("nodemailer");
 
 const app = express();
 
+app.use(cors({
+  origin: "https://www.sdcsala02.com.br",
+  credentials: true
+}));
+
 app.use(helmet());
 app.use(express.json({ limit: "2mb" }));
 app.use(cors());
@@ -1095,7 +1100,7 @@ app.put("/meu-email", autenticarCliente, (req, res) => {
 
 
 app.listen(3000, () => {
-  console.log("🚀 SISTEMA SALA 02 RODANDO: http://localhost:3000");
+  console.log("🚀 SISTEMA SALA 02 RODANDO: https://site-sala02-production.up.railway.app");
   console.log("📁 Banco de dados: database.db");
   console.log("🔐 Segurança ativada");
   console.log("📧 Recuperação por e-mail:", EMAIL_USER ? "configurada" : "não configurada");

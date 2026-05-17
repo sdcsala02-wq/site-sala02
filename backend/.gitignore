@@ -1,10 +1,6 @@
 node_modules
 .env
 database.db
-backend/node_modules
-backend/.env
-backend/database.db
+banco de dados.db
 uploads
-.wwebjs_auth
-session
 *.mp4

@@ -15,7 +15,10 @@ const nodemailer = require("nodemailer");
 const app = express();
 
 app.use(cors({
-  origin: "https://www.sdcsala02.com.br",
+  origin: [
+    "https://www.sdcsala02.com.br",
+    "https://sdcsala02.com.br"
+  ],
   credentials: true
 }));
 

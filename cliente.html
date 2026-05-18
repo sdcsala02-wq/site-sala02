@@ -470,6 +470,7 @@
       mensagem.innerText = "";
     }
 
+   
     async function entrar() {
       const cpf = document.getElementById("cpf").value;
       const senha = document.getElementById("senha").value;
@@ -487,11 +488,14 @@
         btn.innerText = "Acessando...";
         loginCard.classList.add("loading");
 
-        //const resposta = await fetch(API + "/login", {
-        //method: "POST",
-        //headers: { "Content-Type": "application/json" },
-        //body: JSON.stringify({ cpf, senha })
-        //});
+        const resposta = await fetch(API + "/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ cpf, senha })
+        });
+
 
         const cliente = await resposta.json();
 

@@ -508,13 +508,13 @@ app.post("/clientes", limitarCadastro, async (req, res) => {
 app.post("/login", limitarLogin, async (req, res) => {
   const { documento, cpf, cnpj, senha, recaptchaToken } = req.body;
 
-  const recaptchaOk = await validarRecaptcha(recaptchaToken);
+  //const recaptchaOk = await validarRecaptcha(recaptchaToken);
 
-  if (!recaptchaOk) {
-    return res.status(403).json({ erro: "Falha na verificação de segurança." });
-  }
+  //if (!recaptchaOk) {
+  //return res.status(403).json({ erro: "Falha na verificação de segurança." });
+  //}
 
-  if ((!documento && !cpf && !cnpj) || !senha) {
+  if (!cpf || !senha) {
     return res.status(400).json({ erro: "Informe CPF/CNPJ e senha." });
   }
 

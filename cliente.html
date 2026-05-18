@@ -6,6 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Área do Cliente | Sala 02</title>
 
+  <head>
+    ...
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N8RKCZLB35"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXX'); // substitua pelo seu ID GA4
+    </script>
+    ...
+  </head>
+
   <style>
     * {
       margin: 0;
@@ -433,7 +446,7 @@
   </section>
 
   <script>
-    const API = "http://127.0.0.1:3000";
+    const API = "https://site-sala02-production.up.railway.app";
 
     function limparCpf(cpf) {
       return String(cpf || "").replace(/\D/g, "");
@@ -474,11 +487,11 @@
         btn.innerText = "Acessando...";
         loginCard.classList.add("loading");
 
-        const resposta = await fetch(API + "/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cpf, senha })
-        });
+        //const resposta = await fetch(API + "/login", {
+        //method: "POST",
+        //headers: { "Content-Type": "application/json" },
+        //body: JSON.stringify({ cpf, senha })
+        //});
 
         const cliente = await resposta.json();
 

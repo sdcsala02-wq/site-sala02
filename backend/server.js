@@ -733,11 +733,13 @@ app.post("/login-ceo", limitarLogin, async (req, res) => {
   try {
     const { usuario, senha, recaptchaToken } = req.body;
 
-    const recaptchaOk = await validarRecaptcha(recaptchaToken);
+    const recaptchaOk = true;
 
-    if (!recaptchaOk) {
-      return res.status(403).json({ erro: "Falha na verificação de segurança." });
-    }
+    //const recaptchaOk = await validarRecaptcha(recaptchaToken);
+
+    //if (!recaptchaOk) {
+    //return res.status(403).json({ erro: "Falha na verificação de segurança." });
+    //}
 
     if (!usuario || !senha) {
       return res.status(400).json({ erro: "Informe usuário e senha." });

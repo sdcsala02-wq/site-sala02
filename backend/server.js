@@ -421,15 +421,15 @@ const upload = multer({
 // CADASTRAR CLIENTE
 // =======================
 
-app.post("/clientes", limitarCadastro, async (req, res) => {
+app.post("/clientes", async (req, res) => {
   try {
     const { nome, cpf, cnpj, email, telefone, senha, recaptchaToken } = req.body;
 
-    const recaptchaOk = await validarRecaptcha(recaptchaToken);
+    //const recaptchaOk = await validarRecaptcha(recaptchaToken);
 
-    if (!recaptchaOk) {
-      return res.status(403).json({ erro: "Falha na verificação de segurança." });
-    }
+    //  if (!recaptchaOk) {
+    //      return res.status(403).json({ erro: "Falha na verificação de segurança." });
+    // }
 
     if (!nome || !senha) {
       return res.status(400).json({ erro: "Preencha nome e senha." });

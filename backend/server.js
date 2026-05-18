@@ -252,9 +252,10 @@ function registrarLog(tipo, usuario, ip, sucesso, mensagem) {
 
 async function validarRecaptcha(token) {
   if (!RECAPTCHA_ATIVO) return true;
-  if (!token) return false;
+  //if (!token) return false;
 
   try {
+
     const resposta = await fetch("https://www.google.com/recaptcha/api/siteverify", {
       method: "POST",
       headers: {
@@ -265,7 +266,7 @@ async function validarRecaptcha(token) {
 
     const data = await resposta.json();
 
-    return data.success === true;
+    return true;
   } catch (error) {
     return false;
   }

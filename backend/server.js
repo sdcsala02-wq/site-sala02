@@ -431,6 +431,7 @@ app.post("/clientes", async (req, res) => {
     console.log(req.body);
 
     const { nome, cpf, cnpj, email, telefone, senha, recaptchaToken } = req.body;
+    console.log("BODY:", req.body);
 
     //const recaptchaOk = await validarRecaptcha(recaptchaToken);
 
@@ -477,7 +478,7 @@ app.post("/clientes", async (req, res) => {
       (nome, cpf, cnpj, email, telefone, documento_tipo, senha, criado_em)
       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now', 'localtime'))`,
       [
-        nome.trim(),
+        String(nome || "").trim(),
         cpfLimpo || null,
         cnpjLimpo || null,
         emailLimpo || null,
@@ -494,7 +495,7 @@ app.post("/clientes", async (req, res) => {
 
         res.json({
           id: this.lastID,
-          nome: nome.trim(),
+          nome: String(nome || "").trim(),
           cpf: cpfLimpo || null,
           cnpj: cnpjLimpo || null,
           email: emailLimpo || null,

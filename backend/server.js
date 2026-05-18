@@ -660,182 +660,187 @@ app.post("/recuperar-senha", limitarRecuperacao, async (req, res) => {
     console.error("ERRO REAL:", error);
 
     res.status(500).json({
-      erro: "Erro interno ao cadastrar cliente."
+      erro: "Erro interno ao recuperar senha."
     });
 
   }
+});
 
-  // =======================
-  // REDEFINIR SENHA
-  // =======================
 
-  app.post("/redefinir-senha", async (req, res) => {
-    try {
-      const { token, novaSenha } = req.body;
+// =======================
+// REDEFINIR SENHA
 
-      if (!token || !novaSenha) {
-        return res.status(400).json({
-          sucesso: false,
-          mensagem: "Informe o token e a nova senha."
-        });
-      }
+// =======================
+// REDEFINIR SENHA
+// =======================
 
-      if (!validarSenhaForte(novaSenha)) {
-        return res.status(400).json({
-          sucesso: false,
-          mensagem: "A nova senha deve ter no mínimo 8 caracteres, letra maiúscula, minúscula, número e símbolo."
-        });
-      }
+app.post("/redefinir-senha", async (req, res) => {
+  try {
+    const { token, novaSenha } = req.body;
 
-      db.get(
-        `SELECT * FROM clientes 
-       WHERE token_recuperacao = ? AND token_expira > ?`,
-        [String(token).trim(), Date.now()],
-        async (err, cliente) => {
-          if (err) {
-            return res.status(500).json({
-              sucesso: false,
-              mensagem: "Erro interno ao validar token."
-            });
-          }
-
-          if (!cliente) {
-            return res.status(400).json({
-              sucesso: false,
-              mensagem: "Token inválido ou expirado."
-            });
-          }
-
-          const senhaHash = await bcrypt.hash(novaSenha, 10);
-
-          db.run(
-            `UPDATE clientes
-           SET senha = ?, token_recuperacao = NULL, token_expira = NULL
-           WHERE id = ?`,
-            [senhaHash, cliente.id],
-            function (updateErr) {
-              if (updateErr) {
-                return res.status(500).json({
-                  sucesso: false,
-                  mensagem: "Erro ao redefinir senha."
-                });
-              }
-
-              registrarLog("REDEFINIR_SENHA", cliente.nome, req.ip, true, "Senha redefinida.");
-
-              return res.json({
-                sucesso: true,
-                mensagem: "Senha redefinida com sucesso."
-              });
-            }
-          );
-        }
-      );
-
-    } catch (error) {
-      return res.status(500).json({
+    if (!token || !novaSenha) {
+      return res.status(400).json({
         sucesso: false,
-        mensagem: "Erro interno ao redefinir senha."
+        mensagem: "Informe o token e a nova senha."
       });
     }
-  });
 
-  // =======================
-  // LOGIN CEO
-  // =======================
-
-  app.post("/login-ceo", limitarLogin, async (req, res) => {
-    try {
-      const { usuario, senha, recaptchaToken } = req.body;
-
-      const recaptchaOk = true;
-
-      //const recaptchaOk = await validarRecaptcha(recaptchaToken);
-
-      //if (!recaptchaOk) {
-      //return res.status(403).json({ erro: "Falha na verificação de segurança." });
-      //}
-
-      if (!usuario || !senha) {
-        return res.status(400).json({ erro: "Informe usuário e senha." });
-      }
-
-      if (usuario !== CEO_USUARIO) {
-        registrarLog("LOGIN_CEO", usuario, req.ip, false, "Usuário inválido.");
-        return res.status(401).json({ erro: "Usuário ou senha inválidos." });
-      }
-
-      const senhaOk = await bcrypt.compare(senha, CEO_SENHA_HASH);
-
-      if (!senhaOk) {
-        registrarLog("LOGIN_CEO", usuario, req.ip, false, "Senha inválida.");
-        return res.status(401).json({ erro: "Usuário ou senha inválidos." });
-      }
-
-      const token = gerarTokenCEO();
-
-      registrarLog("LOGIN_CEO", usuario, req.ip, true, "Login CEO realizado.");
-
-      res.json({ token });
-
-    } catch (error) {
-      res.status(500).json({ erro: "Erro interno no login CEO." });
-    }
-  });
-
-  app.put("/meu-email", autenticarCliente, (req, res) => {
-    const { email } = req.body;
-
-    if (!email || !validarEmail(email)) {
-      return res.status(400).json({ erro: "Informe um e-mail válido." });
+    if (!validarSenhaForte(novaSenha)) {
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: "A nova senha deve ter no mínimo 8 caracteres, letra maiúscula, minúscula, número e símbolo."
+      });
     }
 
-    const emailLimpo = email.trim().toLowerCase();
-
-    db.run(
-      "UPDATE clientes SET email = ? WHERE id = ?",
-      [emailLimpo, req.cliente.id],
-      function (err) {
+    db.get(
+      `SELECT * FROM clientes 
+       WHERE token_recuperacao = ? AND token_expira > ?`,
+      [String(token).trim(), Date.now()],
+      async (err, cliente) => {
         if (err) {
-          return res.status(500).json({ erro: "Erro ao atualizar e-mail." });
+          return res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro interno ao validar token."
+          });
         }
 
-        registrarLog("ALTERAR_EMAIL", req.cliente.nome, req.ip, true, "E-mail atualizado.");
-
-        res.json({
-          sucesso: true,
-          email: emailLimpo,
-          mensagem: "E-mail atualizado com sucesso."
-        });
-      }
-    );
-  });
-
-  // =======================
-  // LISTAR CLIENTES
-  // =======================
-
-  app.get("/clientes", autenticarCEO, (req, res) => {
-    db.all(
-      "SELECT id, nome, cpf, cnpj, email, telefone, documento_tipo, criado_em FROM clientes ORDER BY id DESC",
-      [],
-      (err, rows) => {
-        if (err) {
-          return res.status(500).json({ erro: "Erro ao listar clientes." });
+        if (!cliente) {
+          return res.status(400).json({
+            sucesso: false,
+            mensagem: "Token inválido ou expirado."
+          });
         }
 
-        res.json(rows);
+        const senhaHash = await bcrypt.hash(novaSenha, 10);
+
+        db.run(
+          `UPDATE clientes
+           SET senha = ?, token_recuperacao = NULL, token_expira = NULL
+           WHERE id = ?`,
+          [senhaHash, cliente.id],
+          function (updateErr) {
+            if (updateErr) {
+              return res.status(500).json({
+                sucesso: false,
+                mensagem: "Erro ao redefinir senha."
+              });
+            }
+
+            registrarLog("REDEFINIR_SENHA", cliente.nome, req.ip, true, "Senha redefinida.");
+
+            return res.json({
+              sucesso: true,
+              mensagem: "Senha redefinida com sucesso."
+            });
+          }
+        );
       }
     );
-  });
 
-  // =======================
-  // PROCESSOS
-  // =======================
+  } catch (error) {
+    return res.status(500).json({
+      sucesso: false,
+      mensagem: "Erro interno ao redefinir senha."
+    });
+  }
+});
 
-  app.get("/processos", autenticarCEO, (req, res) => {
-    db.all(
-      `SELECT 
+// =======================
+// LOGIN CEO
+// =======================
+
+app.post("/login-ceo", limitarLogin, async (req, res) => {
+  try {
+    const { usuario, senha, recaptchaToken } = req.body;
+
+    const recaptchaOk = true;
+
+    //const recaptchaOk = await validarRecaptcha(recaptchaToken);
+
+    //if (!recaptchaOk) {
+    //return res.status(403).json({ erro: "Falha na verificação de segurança." });
+    //}
+
+    if (!usuario || !senha) {
+      return res.status(400).json({ erro: "Informe usuário e senha." });
+    }
+
+    if (usuario !== CEO_USUARIO) {
+      registrarLog("LOGIN_CEO", usuario, req.ip, false, "Usuário inválido.");
+      return res.status(401).json({ erro: "Usuário ou senha inválidos." });
+    }
+
+    const senhaOk = await bcrypt.compare(senha, CEO_SENHA_HASH);
+
+    if (!senhaOk) {
+      registrarLog("LOGIN_CEO", usuario, req.ip, false, "Senha inválida.");
+      return res.status(401).json({ erro: "Usuário ou senha inválidos." });
+    }
+
+    const token = gerarTokenCEO();
+
+    registrarLog("LOGIN_CEO", usuario, req.ip, true, "Login CEO realizado.");
+
+    res.json({ token });
+
+  } catch (error) {
+    res.status(500).json({ erro: "Erro interno no login CEO." });
+  }
+});
+
+app.put("/meu-email", autenticarCliente, (req, res) => {
+  const { email } = req.body;
+
+  if (!email || !validarEmail(email)) {
+    return res.status(400).json({ erro: "Informe um e-mail válido." });
+  }
+
+  const emailLimpo = email.trim().toLowerCase();
+
+  db.run(
+    "UPDATE clientes SET email = ? WHERE id = ?",
+    [emailLimpo, req.cliente.id],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ erro: "Erro ao atualizar e-mail." });
+      }
+
+      registrarLog("ALTERAR_EMAIL", req.cliente.nome, req.ip, true, "E-mail atualizado.");
+
+      res.json({
+        sucesso: true,
+        email: emailLimpo,
+        mensagem: "E-mail atualizado com sucesso."
+      });
+    }
+  );
+});
+
+// =======================
+// LISTAR CLIENTES
+// =======================
+
+app.get("/clientes", autenticarCEO, (req, res) => {
+  db.all(
+    "SELECT id, nome, cpf, cnpj, email, telefone, documento_tipo, criado_em FROM clientes ORDER BY id DESC",
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ erro: "Erro ao listar clientes." });
+      }
+
+      res.json(rows);
+    }
+  );
+});
+
+// =======================
+// PROCESSOS
+// =======================
+
+app.get("/processos", autenticarCEO, (req, res) => {
+  db.all(
+    `SELECT 
       processos.id,
       processos.cliente_id,
       processos.tipo,
@@ -848,177 +853,177 @@ app.post("/recuperar-senha", limitarRecuperacao, async (req, res) => {
     FROM processos
     INNER JOIN clientes ON clientes.id = processos.cliente_id
     ORDER BY processos.id DESC`,
-      [],
-      (err, rows) => {
-        if (err) {
-          return res.status(500).json({ erro: "Erro ao listar processos." });
-        }
-
-        res.json(rows);
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ erro: "Erro ao listar processos." });
       }
-    );
-  });
 
-  app.post("/processos", autenticarCEO, (req, res) => {
-    const { cliente_id, tipo, status, descricao } = req.body;
-
-    if (!cliente_id || !tipo || !status || !descricao) {
-      return res.status(400).json({ erro: "Preencha todos os dados do processo." });
+      res.json(rows);
     }
+  );
+});
 
-    db.run(
-      `INSERT INTO processos (cliente_id, tipo, status, descricao, data)
+app.post("/processos", autenticarCEO, (req, res) => {
+  const { cliente_id, tipo, status, descricao } = req.body;
+
+  if (!cliente_id || !tipo || !status || !descricao) {
+    return res.status(400).json({ erro: "Preencha todos os dados do processo." });
+  }
+
+  db.run(
+    `INSERT INTO processos (cliente_id, tipo, status, descricao, data)
      VALUES (?, ?, ?, ?, datetime('now', 'localtime'))`,
-      [cliente_id, tipo, status, descricao],
-      function (err) {
-        if (err) {
-          return res.status(500).json({ erro: "Erro ao criar processo." });
-        }
-
-        const processoId = this.lastID;
-
-        db.run(
-          "INSERT INTO historico (processo_id, acao, data) VALUES (?, ?, datetime('now', 'localtime'))",
-          [processoId, "Processo criado com status: " + status]
-        );
-
-        registrarLog("CRIAR_PROCESSO", req.usuario.usuario, req.ip, true, "Processo criado.");
-
-        res.json({ id: processoId });
+    [cliente_id, tipo, status, descricao],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ erro: "Erro ao criar processo." });
       }
-    );
-  });
 
-  app.get("/processos/:id", (req, res) => {
-    db.all(
-      "SELECT * FROM processos WHERE cliente_id = ? ORDER BY id DESC",
-      [req.params.id],
-      (err, rows) => {
-        if (err) {
-          return res.status(500).json({ erro: "Erro ao buscar processos." });
-        }
+      const processoId = this.lastID;
 
-        res.json(rows);
-      }
-    );
-  });
+      db.run(
+        "INSERT INTO historico (processo_id, acao, data) VALUES (?, ?, datetime('now', 'localtime'))",
+        [processoId, "Processo criado com status: " + status]
+      );
 
-  app.put("/processos/:id", autenticarCEO, (req, res) => {
-    const processoId = req.params.id;
-    const { status } = req.body;
+      registrarLog("CRIAR_PROCESSO", req.usuario.usuario, req.ip, true, "Processo criado.");
 
-    if (!status) {
-      return res.status(400).json({ erro: "Informe o novo status." });
+      res.json({ id: processoId });
     }
+  );
+});
 
-    db.run(
-      "UPDATE processos SET status = ?, data = datetime('now', 'localtime') WHERE id = ?",
-      [status, processoId],
-      function (err) {
-        if (err) {
-          return res.status(500).json({ erro: "Erro ao atualizar status." });
-        }
-
-        if (this.changes === 0) {
-          return res.status(404).json({ erro: "Processo não encontrado." });
-        }
-
-        db.run(
-          "INSERT INTO historico (processo_id, acao, data) VALUES (?, ?, datetime('now', 'localtime'))",
-          [processoId, "Status alterado para: " + status]
-        );
-
-        registrarLog("ATUALIZAR_STATUS", req.usuario.usuario, req.ip, true, "Status atualizado.");
-
-        res.json({
-          atualizado: true,
-          id: processoId,
-          status
-        });
+app.get("/processos/:id", (req, res) => {
+  db.all(
+    "SELECT * FROM processos WHERE cliente_id = ? ORDER BY id DESC",
+    [req.params.id],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ erro: "Erro ao buscar processos." });
       }
-    );
-  });
 
-  // =======================
-  // HISTÓRICO
-  // =======================
+      res.json(rows);
+    }
+  );
+});
 
-  app.get("/historico/:processoId", autenticarCEO, (req, res) => {
-    db.all(
-      "SELECT * FROM historico WHERE processo_id = ? ORDER BY id DESC",
-      [req.params.processoId],
-      (err, rows) => {
-        if (err) {
-          return res.status(500).json({ erro: "Erro ao buscar histórico." });
-        }
+app.put("/processos/:id", autenticarCEO, (req, res) => {
+  const processoId = req.params.id;
+  const { status } = req.body;
 
-        res.json(rows);
+  if (!status) {
+    return res.status(400).json({ erro: "Informe o novo status." });
+  }
+
+  db.run(
+    "UPDATE processos SET status = ?, data = datetime('now', 'localtime') WHERE id = ?",
+    [status, processoId],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ erro: "Erro ao atualizar status." });
       }
-    );
-  });
 
-  // =======================
-  // DOCUMENTOS
-  // =======================
-
-  app.post("/documentos", autenticarCliente, upload.single("documento"), (req, res) => {
-    try {
-      const { processo_id } = req.body;
-
-      if (!req.file) {
-        return res.status(400).json({ erro: "Nenhum arquivo enviado." });
+      if (this.changes === 0) {
+        return res.status(404).json({ erro: "Processo não encontrado." });
       }
 
       db.run(
-        `INSERT INTO documentos 
-      (cliente_id, processo_id, nome_original, nome_arquivo, caminho, tipo, tamanho)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [
-          req.cliente.id,
-          processo_id || null,
-          req.file.originalname,
-          req.file.filename,
-          "/uploads/" + req.file.filename,
-          req.file.mimetype,
-          req.file.size
-        ],
-        function (err) {
-          if (err) {
-            return res.status(500).json({ erro: "Erro ao salvar documento." });
-          }
-
-          registrarLog("UPLOAD_DOCUMENTO", req.cliente.nome, req.ip, true, "Documento enviado.");
-
-          res.json({
-            id: this.lastID,
-            mensagem: "Documento enviado com segurança.",
-            arquivo: req.file.filename
-          });
-        }
+        "INSERT INTO historico (processo_id, acao, data) VALUES (?, ?, datetime('now', 'localtime'))",
+        [processoId, "Status alterado para: " + status]
       );
 
-    } catch (error) {
-      res.status(500).json({ erro: "Erro no upload." });
-    }
-  });
+      registrarLog("ATUALIZAR_STATUS", req.usuario.usuario, req.ip, true, "Status atualizado.");
 
-  app.get("/meus-documentos", autenticarCliente, (req, res) => {
-    db.all(
-      "SELECT * FROM documentos WHERE cliente_id = ? ORDER BY id DESC",
-      [req.cliente.id],
-      (err, rows) => {
+      res.json({
+        atualizado: true,
+        id: processoId,
+        status
+      });
+    }
+  );
+});
+
+// =======================
+// HISTÓRICO
+// =======================
+
+app.get("/historico/:processoId", autenticarCEO, (req, res) => {
+  db.all(
+    "SELECT * FROM historico WHERE processo_id = ? ORDER BY id DESC",
+    [req.params.processoId],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ erro: "Erro ao buscar histórico." });
+      }
+
+      res.json(rows);
+    }
+  );
+});
+
+// =======================
+// DOCUMENTOS
+// =======================
+
+app.post("/documentos", autenticarCliente, upload.single("documento"), (req, res) => {
+  try {
+    const { processo_id } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ erro: "Nenhum arquivo enviado." });
+    }
+
+    db.run(
+      `INSERT INTO documentos 
+      (cliente_id, processo_id, nome_original, nome_arquivo, caminho, tipo, tamanho)
+      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        req.cliente.id,
+        processo_id || null,
+        req.file.originalname,
+        req.file.filename,
+        "/uploads/" + req.file.filename,
+        req.file.mimetype,
+        req.file.size
+      ],
+      function (err) {
         if (err) {
-          return res.status(500).json({ erro: "Erro ao buscar documentos." });
+          return res.status(500).json({ erro: "Erro ao salvar documento." });
         }
 
-        res.json(rows);
+        registrarLog("UPLOAD_DOCUMENTO", req.cliente.nome, req.ip, true, "Documento enviado.");
+
+        res.json({
+          id: this.lastID,
+          mensagem: "Documento enviado com segurança.",
+          arquivo: req.file.filename
+        });
       }
     );
-  });
 
-  app.get("/documentos", autenticarCEO, (req, res) => {
-    db.all(
-      `SELECT 
+  } catch (error) {
+    res.status(500).json({ erro: "Erro no upload." });
+  }
+});
+
+app.get("/meus-documentos", autenticarCliente, (req, res) => {
+  db.all(
+    "SELECT * FROM documentos WHERE cliente_id = ? ORDER BY id DESC",
+    [req.cliente.id],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ erro: "Erro ao buscar documentos." });
+      }
+
+      res.json(rows);
+    }
+  );
+});
+
+app.get("/documentos", autenticarCEO, (req, res) => {
+  db.all(
+    `SELECT 
       documentos.*,
       clientes.nome AS cliente_nome,
       clientes.cpf AS cliente_cpf,
@@ -1026,98 +1031,98 @@ app.post("/recuperar-senha", limitarRecuperacao, async (req, res) => {
     FROM documentos
     INNER JOIN clientes ON clientes.id = documentos.cliente_id
     ORDER BY documentos.id DESC`,
-      [],
-      (err, rows) => {
-        if (err) {
-          return res.status(500).json({ erro: "Erro ao listar documentos." });
-        }
-
-        res.json(rows);
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ erro: "Erro ao listar documentos." });
       }
-    );
-  });
 
-  // =======================
-  // LOGS
-  // =======================
-
-  app.get("/logs", autenticarCEO, (req, res) => {
-    db.all(
-      "SELECT * FROM logs_acesso ORDER BY id DESC LIMIT 200",
-      [],
-      (err, rows) => {
-        if (err) {
-          return res.status(500).json({ erro: "Erro ao buscar logs." });
-        }
-
-        res.json(rows);
-      }
-    );
-  });
-
-  // =======================
-  // TESTE
-  // =======================
-
-  app.get("/", (req, res) => {
-    res.json({
-      sistema: "Sala 02",
-      status: "online",
-      banco: "SQLite ativo em database.db",
-      email: EMAIL_USER ? "configurado" : "não configurado",
-      seguranca: "CPF, CNPJ, senha forte, token, logs, rate limit, recuperação por e-mail e upload seguro ativos"
-    });
-  });
-
-  // =======================
-  // INICIAR
-  // =======================
-
-  app.put("/meu-email", autenticarCliente, (req, res) => {
-
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({
-        erro: "Informe um e-mail."
-      });
+      res.json(rows);
     }
+  );
+});
 
-    const emailLimpo = email.trim().toLowerCase();
+// =======================
+// LOGS
+// =======================
 
-    db.run(
-      `
+app.get("/logs", autenticarCEO, (req, res) => {
+  db.all(
+    "SELECT * FROM logs_acesso ORDER BY id DESC LIMIT 200",
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ erro: "Erro ao buscar logs." });
+      }
+
+      res.json(rows);
+    }
+  );
+});
+
+// =======================
+// TESTE
+// =======================
+
+app.get("/", (req, res) => {
+  res.json({
+    sistema: "Sala 02",
+    status: "online",
+    banco: "SQLite ativo em database.db",
+    email: EMAIL_USER ? "configurado" : "não configurado",
+    seguranca: "CPF, CNPJ, senha forte, token, logs, rate limit, recuperação por e-mail e upload seguro ativos"
+  });
+});
+
+// =======================
+// INICIAR
+// =======================
+
+app.put("/meu-email", autenticarCliente, (req, res) => {
+
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({
+      erro: "Informe um e-mail."
+    });
+  }
+
+  const emailLimpo = email.trim().toLowerCase();
+
+  db.run(
+    `
     UPDATE clientes
     SET email = ?
     WHERE id = ?
     `,
-      [emailLimpo, req.cliente.id],
+    [emailLimpo, req.cliente.id],
 
-      function (err) {
+    function (err) {
 
-        if (err) {
-          console.log(err);
+      if (err) {
+        console.log(err);
 
-          return res.status(500).json({
-            erro: "Erro ao atualizar e-mail."
-          });
-        }
-
-        res.json({
-          sucesso: true,
-          email: emailLimpo
+        return res.status(500).json({
+          erro: "Erro ao atualizar e-mail."
         });
-
       }
-    );
 
-  });
+      res.json({
+        sucesso: true,
+        email: emailLimpo
+      });
 
-  const PORT = process.env.PORT || 3000;
+    }
+  );
 
-  app.listen(PORT, () => {
-    console.log("🚀 SISTEMA SALA 02 RODANDO: https://site-sala02-production.up.railway.app");
-    console.log("📁 Banco de dados: database.db");
-    console.log("🔐 Segurança ativada");
-    console.log("📧 Recuperação por e-mail:", EMAIL_USER ? "configurada" : "não configurada");
-  });
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("🚀 SISTEMA SALA 02 RODANDO: https://site-sala02-production.up.railway.app");
+  console.log("📁 Banco de dados: database.db");
+  console.log("🔐 Segurança ativada");
+  console.log("📧 Recuperação por e-mail:", EMAIL_USER ? "configurada" : "não configurada");
+});

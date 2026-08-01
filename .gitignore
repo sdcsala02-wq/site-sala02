@@ -1,0 +1,27 @@
+﻿# Dependências
+node_modules/
+backend/node_modules/
+
+# Variáveis e segredos
+.env
+.env.*
+backend/.env
+backend/.env.*
+
+# Bancos locais
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads e arquivos temporários
+uploads/
+backend/uploads/
+*.log
+
+# Diagnósticos locais
+estrutura-completa-site-sala02.txt
+
+# Sistema operacional e editor
+.DS_Store
+Thumbs.db
+.vscode/

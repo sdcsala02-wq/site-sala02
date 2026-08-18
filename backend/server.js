@@ -11,6 +11,7 @@ const fs = require("fs");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const nodemailer = require("nodemailer");
+const authRoutes = require('./routes/auth.routes');
 
 const app = express();
 
@@ -24,6 +25,8 @@ app.use(cors({
 
 app.use(helmet());
 app.use(express.json({ limit: "2mb" }));
+
+app.use("/api/auth", authRoutes);
 
 const JWT_SECRET = process.env.JWT_SECRET || "SALA02_SUPER_SEGURA_2026";
 const CEO_USUARIO = process.env.CEO_USUARIO || "ceo";

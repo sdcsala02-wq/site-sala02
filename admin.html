@@ -420,10 +420,10 @@
   </section>
 
   <script>
-    const API = "https://site-sala02-production.up.railway.app";
+    const API = "http://localhost:3000";
 
     function getTokenCEO() {
-      return localStorage.getItem("ceoToken");
+      return localStorage.getItem("tokenSala02");
     }
 
     function headersCEO() {
@@ -438,7 +438,7 @@
       const senha = document.getElementById("ceoSenha").value.trim();
 
       try {
-        const resposta = await fetch(API + "/login-ceo", {
+        const resposta = await fetch(API + "/api/auth/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -456,7 +456,8 @@
           return;
         }
 
-        localStorage.setItem("ceoToken", data.token);
+        localStorage.setItem("tokenSala02", data.token);
+        localStorage.setItem("usuarioSala02", JSON.stringify(data.usuario));
         abrirPainel();
 
       } catch (erro) {
@@ -473,7 +474,8 @@
     }
 
     function sairCEO() {
-      localStorage.removeItem("ceoToken");
+      localStorage.removeItem("tokenSala02");
+      localStorage.removeItem("usuarioSala02");
       location.reload();
     }
 
@@ -518,7 +520,10 @@
         const resposta = await fetch(API + "/clientes", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nome, cpf, senha })
+          body: JSON.stringify({
+            identificador: usuario,
+            senha: senha
+          })
         });
 
         const data = await resposta.json();
@@ -774,7 +779,7 @@
     }
 
     window.onload = () => {
-      const token = localStorage.getItem("ceoToken");
+      const token = localStorage.getItem("tokenSala02");
 
       if (token) {
         abrirPainel();

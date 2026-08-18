@@ -1,6 +1,8 @@
-node_modules
+﻿node_modules/
 .env
-database.db
-banco de dados.db
-uploads
-*.mp4
+.env.*
+uploads/
+*.db
+*.sqlite
+*.sqlite3
+*.log

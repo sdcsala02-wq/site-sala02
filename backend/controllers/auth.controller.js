@@ -6,6 +6,40 @@ const {
   registrarAuditoria
 } = require("../services/auditoria.service");
 
+const NOME_COOKIE_TOKEN = "sala02_token";
+const DURACAO_TOKEN_MS =
+  8 * 60 * 60 * 1000;
+
+function ambienteProducao() {
+  return (
+    process.env.NODE_ENV === "production" ||
+    Boolean(process.env.RAILWAY_ENVIRONMENT_ID) ||
+    Boolean(process.env.RAILWAY_PUBLIC_DOMAIN)
+  );
+}
+
+function opcoesCookieToken() {
+  const producao = ambienteProducao();
+
+  return {
+    httpOnly: true,
+    secure: producao,
+    sameSite: producao
+      ? "none"
+      : "lax",
+    path: "/",
+    maxAge: DURACAO_TOKEN_MS
+  };
+}
+
+function opcoesLimpezaCookie() {
+  const opcoes = opcoesCookieToken();
+
+  delete opcoes.maxAge;
+
+  return opcoes;
+}
+
 function somenteNumeros(valor) {
   return String(valor || "").replace(/\D/g, "");
 }
@@ -367,6 +401,17 @@ async function login(req, res) {
       }
     });
 
+    res.cookie(
+      NOME_COOKIE_TOKEN,
+      token,
+      opcoesCookieToken()
+    );
+
+    res.set(
+      "Cache-Control",
+      "no-store"
+    );
+
     return res.json({
       sucesso: true,
 
@@ -398,6 +443,35 @@ async function login(req, res) {
       erro: "Erro interno ao realizar o login."
     });
   }
+}
+
+async function logout(req, res) {
+  res.clearCookie(
+    NOME_COOKIE_TOKEN,
+    opcoesLimpezaCookie()
+  );
+
+  res.set(
+    "Cache-Control",
+    "no-store"
+  );
+
+  await registrarAuditoria({
+    usuarioId: req.usuario.id,
+    acao: "LOGOUT",
+    entidade: "usuarios",
+    entidadeId: req.usuario.id,
+    ip: req.ip,
+    userAgent: req.headers["user-agent"],
+    dadosNovos: {
+      sessao_encerrada: true
+    }
+  });
+
+  return res.json({
+    sucesso: true,
+    mensagem: "Sessao encerrada com sucesso."
+  });
 }
 
 async function usuarioAtual(req, res) {
@@ -445,5 +519,6 @@ async function usuarioAtual(req, res) {
 
 module.exports = {
   login,
+  logout,
   usuarioAtual
 };

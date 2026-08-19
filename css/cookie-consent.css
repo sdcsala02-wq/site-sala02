@@ -1,0 +1,129 @@
+.sala02-consent {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  left: 18px;
+  z-index: 2147483000;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 18px;
+  border: 1px solid rgba(215, 168, 94, 0.55);
+  border-radius: 16px;
+  background: #f4efe7;
+  color: #071f3d;
+  box-shadow: 0 18px 50px rgba(2, 9, 20, 0.32);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.sala02-consent[hidden] {
+  display: none;
+}
+
+.sala02-consent__content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+}
+
+.sala02-consent__title {
+  margin: 0 0 5px;
+  color: #071f3d;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.sala02-consent__text {
+  margin: 0;
+  color: #465166;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.sala02-consent__text a {
+  color: #071f3d;
+  font-weight: 700;
+}
+
+.sala02-consent__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sala02-consent__button {
+  min-height: 38px;
+  padding: 0 15px;
+  border: 1px solid #071f3d;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sala02-consent__button--accept {
+  background: #071f3d;
+  color: #ffffff;
+}
+
+.sala02-consent__button--reject {
+  background: transparent;
+  color: #071f3d;
+}
+
+.sala02-consent__button:focus-visible,
+.sala02-privacy-settings:focus-visible {
+  outline: 3px solid rgba(215, 168, 94, 0.55);
+  outline-offset: 2px;
+}
+
+.sala02-privacy-settings {
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  z-index: 2147482999;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 10px;
+  background: #071f3d;
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(2, 9, 20, 0.22);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sala02-privacy-settings[hidden] {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  .sala02-consent {
+    right: 9px;
+    bottom: 9px;
+    left: 9px;
+    padding: 16px;
+  }
+
+  .sala02-consent__content {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .sala02-consent__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sala02-consent__button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .sala02-consent__actions {
+    grid-template-columns: 1fr;
+  }
+}

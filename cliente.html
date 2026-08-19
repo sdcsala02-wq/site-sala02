@@ -5,21 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Área do Cliente | Sala 02</title>
-
-  <head>
-    ...
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N8RKCZLB35"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
-      gtag('js', new Date());
-      gtag('config', 'G-XXXXXXX'); // substitua pelo seu ID GA4
-    </script>
-    ...
-  </head>
-
-  <style>
+<style>
     * {
       margin: 0;
       padding: 0;
@@ -338,6 +324,37 @@
       }
     }
   </style>
+  <style id="loginCompactoElegante">
+    #loginCard input {
+      height: 40px;
+      padding: 0 14px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+
+    #loginCard input:focus {
+      border-color: #d7a85e;
+      box-shadow: 0 0 0 3px rgba(215, 168, 94, 0.18);
+    }
+
+    #loginCard #btnEntrar {
+      height: 42px;
+      padding: 0 18px;
+      margin-top: 2px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.1px;
+    }
+
+    #loginCard #btnEntrar:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(7, 31, 61, 0.24);
+    }
+  </style>
+  <link rel="stylesheet" href="css/cookie-consent.css">
+  <link rel="stylesheet" href="css/cliente-portal.css">
 </head>
 
 <body>
@@ -352,18 +369,23 @@
 
       <div id="mensagem" class="message"></div>
 
-      <input id="cpf" placeholder="Digite seu CPF">
+      <input
+        id="documento"
+        type="text"
+        inputmode="numeric"
+        maxlength="18"
+        autocomplete="username"
+        placeholder="Digite seu CPF ou CNPJ"
+      >
       <input id="senha" type="password" placeholder="Digite sua senha">
 
-      <button id="btnEntrar" onclick="entrar()">Acessar minha área</button>
+      <button id="btnEntrar">Acessar minha área</button>
 
       <a href="cadastro.html" class="create-account">
         Primeiro acesso? Criar minha conta
       </a>
 
-      <a href="redefinir-senha.html" class="forgot-password">
-        Esqueci minha senha
-      </a>
+      <span class="forgot-password">Recuperação de senha em implantação</span>
 
       <a href="index.html" class="back-home">
         ← Voltar para a página inicial
@@ -379,7 +401,7 @@
         <p>Área do Cliente</p>
       </div>
 
-      <button class="logout" onclick="sair()">Sair</button>
+      <button class="logout">Sair</button>
     </div>
 
     <div class="container">
@@ -397,17 +419,13 @@
         </div>
 
         <div class="summary-card">
-          <span>CPF</span>
-          <h3 id="resumoCpf">---</h3>
+          <span id="rotuloDocumento">CPF</span>
+          <h3 id="resumoDocumento">---</h3>
         </div>
 
         <div class="summary-card">
           <span>E-mail</span>
           <h3 id="clienteEmail">---</h3>
-
-          <button class="btn-email" onclick="abrirAlterarEmail()">
-            Alterar e-mail
-          </button>
         </div>
 
         <div class="summary-card">
@@ -427,9 +445,7 @@
         <div class="notice">
           Área preparada para exibir documentos anexados, documentos pendentes e exigências.
         </div>
-        <div class="empty">
-          Em breve, você poderá visualizar os documentos enviados e acompanhar pendências diretamente por aqui.
-        </div>
+        <div id="listaDocumentos"></div>
       </div>
 
       <div class="section-card">
@@ -445,200 +461,9 @@
     </div>
   </section>  
 
-  <script>
-    const API = "https://site-sala02-production.up.railway.app";
+    <script src="js/cliente.js" defer></script>
 
-    function limparCpf(cpf) {
-      return String(cpf || "").replace(/\D/g, "");
-    }
-
-    function formatarCpf(cpf) {
-      const n = limparCpf(cpf);
-      if (n.length !== 11) return cpf || "---";
-      return n.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-    }
-
-    function mostrarMensagem(texto, tipo = "error") {
-      const mensagem = document.getElementById("mensagem");
-      mensagem.className = "message " + tipo;
-      mensagem.innerText = texto;
-    }
-
-    function limparMensagem() {
-      const mensagem = document.getElementById("mensagem");
-      mensagem.className = "message";
-      mensagem.innerText = "";
-    }
-
-   
-    async function entrar() {
-      const cpf = document.getElementById("cpf").value;
-      const senha = document.getElementById("senha").value;
-      const btn = document.getElementById("btnEntrar");
-      const loginCard = document.getElementById("loginCard");
-
-      limparMensagem();
-
-      if (!cpf || !senha) {
-        mostrarMensagem("Digite CPF e senha para acessar.");
-        return;
-      }
-
-      try {
-        btn.innerText = "Acessando...";
-        loginCard.classList.add("loading");
-
-        const resposta = await fetch(API + "/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ cpf, senha })
-        });
-
-
-        const cliente = await resposta.json();
-
-        if (!resposta.ok || cliente.erro) {
-          mostrarMensagem(cliente.erro || "Erro ao acessar.");
-          return;
-        }
-
-        localStorage.setItem("clienteSala02", JSON.stringify(cliente));
-
-        mostrarMensagem("Acesso liberado. Carregando painel...", "success");
-
-        setTimeout(() => {
-          abrirDashboard(cliente);
-        }, 500);
-
-      } catch (error) {
-        mostrarMensagem("Erro ao conectar com o servidor. Verifique se o backend está rodando.");
-      } finally {
-        btn.innerText = "Acessar minha área";
-        loginCard.classList.remove("loading");
-      }
-    }
-
-    async function abrirDashboard(cliente) {
-      document.getElementById("loginScreen").style.display = "none";
-      document.getElementById("dashboard").style.display = "block";
-
-      document.getElementById("nomeCliente").innerText = "Olá, " + cliente.nome;
-      document.getElementById("resumoNome").innerText = cliente.nome;
-      document.getElementById("resumoCpf").innerText = formatarCpf(cliente.cpf);
-      document.getElementById("clienteEmail").innerText = cliente.email || "Não cadastrado";
-
-      carregarProcessos(cliente.id);
-    }
-
-    async function carregarProcessos(clienteId) {
-      try {
-        const resposta = await fetch(API + "/processos/" + clienteId);
-        const processos = await resposta.json();
-
-        if (!Array.isArray(processos)) {
-          document.getElementById("listaProcessos").innerHTML = `
-            <div class="empty">Erro ao carregar processos.</div>
-          `;
-          document.getElementById("totalProcessos").innerText = "0";
-          return;
-        }
-
-        document.getElementById("totalProcessos").innerText = processos.length;
-
-        const lista = document.getElementById("listaProcessos");
-
-        if (!processos.length) {
-          lista.innerHTML = `
-            <div class="empty">Nenhum processo cadastrado ainda.</div>
-          `;
-          return;
-        }
-
-        lista.innerHTML = processos.map(p => `
-          <div class="processo">
-            <h3>${p.tipo}</h3>
-            <span class="status">${p.status}</span>
-            <p>${p.descricao}</p>
-
-            <div class="timeline">
-              <p>✅ Processo cadastrado na Sala 02</p>
-              <p>📌 Status atual: <strong>${p.status}</strong></p>
-              <p>🕒 Última atualização: ${p.data}</p>
-            </div>
-          </div>
-        `).join("");
-
-      } catch (error) {
-        document.getElementById("listaProcessos").innerHTML = `
-          <div class="empty">
-            Erro ao carregar processos. Verifique se o servidor está rodando.
-          </div>
-        `;
-      }
-    }
-
-    function abrirAlterarEmail() {
-      const novoEmail = prompt("Digite o novo e-mail:");
-
-      if (!novoEmail) return;
-
-      alterarEmail(novoEmail);
-    }
-
-    async function alterarEmail(email) {
-      const cliente = JSON.parse(localStorage.getItem("clienteSala02"));
-
-      if (!cliente || !cliente.token) {
-        alert("Sessão expirada. Faça login novamente.");
-        sair();
-        return;
-      }
-
-      try {
-        const resposta = await fetch(API + "/meu-email", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + cliente.token
-          },
-          body: JSON.stringify({ email })
-        });
-
-        const dados = await resposta.json();
-
-        if (!resposta.ok) {
-          alert(dados.erro || "Erro ao atualizar e-mail.");
-          return;
-        }
-
-        cliente.email = dados.email;
-        localStorage.setItem("clienteSala02", JSON.stringify(cliente));
-
-        document.getElementById("clienteEmail").innerText = dados.email;
-
-        alert("E-mail atualizado com sucesso!");
-
-      } catch (erro) {
-        alert("Erro ao conectar com o servidor.");
-      }
-    }
-
-    function sair() {
-      localStorage.removeItem("clienteSala02");
-      location.reload();
-    }
-
-    window.onload = () => {
-      const clienteSalvo = localStorage.getItem("clienteSala02");
-
-      if (clienteSalvo) {
-        abrirDashboard(JSON.parse(clienteSalvo));
-      }
-    };
-  </script>
-
+  <script src="js/analytics-consent.js" defer></script>
 </body>
 
 </html>

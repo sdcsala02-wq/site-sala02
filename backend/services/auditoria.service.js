@@ -1,4 +1,4 @@
-const pool = require('../config/database');
+const pool = require("../config/database");
 
 async function registrarAuditoria({
   usuarioId = null,
@@ -8,10 +8,12 @@ async function registrarAuditoria({
   ip = null,
   userAgent = null,
   dadosAnteriores = null,
-  dadosNovos = null
+  dadosNovos = null,
+  executor = pool,
+  propagarErro = false
 }) {
   try {
-    await pool.query(
+    await executor.query(
       `
         INSERT INTO logs_auditoria (
           usuario_id,
@@ -49,11 +51,20 @@ async function registrarAuditoria({
           : null
       ]
     );
+
+    return true;
+
   } catch (erro) {
     console.error(
-      'Erro ao registrar auditoria:',
+      "Erro ao registrar auditoria:",
       erro.message
     );
+
+    if (propagarErro) {
+      throw erro;
+    }
+
+    return false;
   }
 }
 

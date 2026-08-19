@@ -17,8 +17,6 @@
       ? "http://127.0.0.1:3102"
       : API_PRODUCAO;
 
-  let sessaoAtual = null;
-
   function somenteNumeros(valor) {
     return String(valor || "")
       .replace(/\D/g, "");
@@ -187,92 +185,113 @@
     mensagem.textContent = "";
   }
 
+  function normalizarSessao(sessao) {
+    if (
+      !sessao ||
+      typeof sessao !== "object"
+    ) {
+      return null;
+    }
+
+    return {
+      login_via:
+        sessao.login_via || "CPF",
+      usuario:
+        sessao.usuario || null,
+      empresa:
+        sessao.empresa || null
+    };
+  }
+
   function lerSessao() {
     let valor = null;
 
     try {
-      valor = sessionStorage.getItem(
-        CHAVE_SESSAO
-      );
-
-      if (!valor) {
-        valor = localStorage.getItem(
+      valor =
+        sessionStorage.getItem(
+          CHAVE_SESSAO
+        ) ||
+        localStorage.getItem(
           CHAVE_SESSAO
         );
+    } catch {
+      limparSessao();
+      return null;
+    }
 
-        if (valor) {
-          sessionStorage.setItem(
-            CHAVE_SESSAO,
-            valor
-          );
+    if (!valor) {
+      limparSessao();
+      return null;
+    }
 
-          localStorage.removeItem(
-            CHAVE_SESSAO
-          );
-        }
+    try {
+      const sessao =
+        normalizarSessao(
+          JSON.parse(valor)
+        );
+
+      if (!sessao) {
+        limparSessao();
+        return null;
       }
 
-      return valor
-        ? JSON.parse(valor)
-        : null;
+      salvarSessao(sessao);
+      return sessao;
 
     } catch {
+      limparSessao();
       return null;
     }
   }
 
   function salvarSessao(sessao) {
-    sessaoAtual = sessao;
+    const sessaoSegura =
+      normalizarSessao(sessao);
+
+    if (!sessaoSegura) {
+      return false;
+    }
+
+    let armazenada = false;
 
     try {
       sessionStorage.setItem(
         CHAVE_SESSAO,
-        JSON.stringify(sessao)
+        JSON.stringify(sessaoSegura)
       );
 
+      armazenada = true;
+    } catch {
+      armazenada = false;
+    }
+
+    try {
       localStorage.removeItem(
         CHAVE_SESSAO
       );
     } catch {
-      return false;
+      // O armazenamento legado pode estar indisponível.
     }
 
-    return true;
+    return armazenada;
   }
 
   function limparSessao() {
-    sessaoAtual = null;
-
     try {
       sessionStorage.removeItem(
         CHAVE_SESSAO
       );
+    } catch {
+      // O sessionStorage pode estar indisponível.
+    }
 
+    try {
       localStorage.removeItem(
         CHAVE_SESSAO
       );
     } catch {
-      return;
+      // O localStorage pode estar indisponível.
     }
-  }
-
-  function cabecalhosAutenticados(
-    adicionais = {}
-  ) {
-    const cabecalhos = {
-      ...adicionais
-    };
-
-    if (
-      sessaoAtual &&
-      sessaoAtual.token
-    ) {
-      cabecalhos.Authorization =
-        "Bearer " +
-        sessaoAtual.token;
-    }
-
-    return cabecalhos;
   }
 
   async function requisicao(
@@ -284,10 +303,9 @@
       {
         ...opcoes,
         credentials: "include",
-        headers:
-          cabecalhosAutenticados(
-            opcoes.headers || {}
-          )
+        headers: {
+          ...(opcoes.headers || {})
+        }
       }
     );
 
@@ -846,10 +864,6 @@
     const empresa =
       sessao.empresa || null;
 
-    sessaoAtual = {
-      ...sessao,
-      usuario
-    };
 
     document.getElementById(
       "loginScreen"
@@ -1001,7 +1015,6 @@
       }
 
       const sessao = {
-        token: dados.token || null,
         login_via:
           dados.login_via || "CPF",
         usuario: dados.usuario,
@@ -1067,8 +1080,6 @@
     const sessaoSalva =
       lerSessao();
 
-    sessaoAtual =
-      sessaoSalva || null;
 
     try {
       const usuario =
@@ -1085,10 +1096,6 @@
       }
 
       const sessao = {
-        token:
-          sessaoSalva
-            ? sessaoSalva.token
-            : null,
 
         login_via:
           sessaoSalva

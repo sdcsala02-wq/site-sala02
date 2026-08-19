@@ -2,6 +2,9 @@ const jwt = require("jsonwebtoken");
 
 const NOME_COOKIE_TOKEN =
   "sala02_token";
+const ALGORITMO_JWT = "HS256";
+const EMISSOR_JWT = "sala02-api";
+const AUDIENCIA_JWT = "sala02-portal";
 
 function obterCookie(req, nome) {
   const cabecalhoCookies =
@@ -47,18 +50,6 @@ function obterCookie(req, nome) {
 }
 
 function obterToken(req) {
-  const cabecalho =
-    req.headers.authorization;
-
-  if (
-    cabecalho &&
-    /^Bearer\s+/i.test(cabecalho)
-  ) {
-    return cabecalho
-      .replace(/^Bearer\s+/i, "")
-      .trim();
-  }
-
   return obterCookie(
     req,
     NOME_COOKIE_TOKEN
@@ -85,7 +76,12 @@ function autenticar(req, res, next) {
   try {
     const dados = jwt.verify(
       token,
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      {
+        algorithms: [ALGORITMO_JWT],
+        issuer: EMISSOR_JWT,
+        audience: AUDIENCIA_JWT
+      }
     );
 
     req.usuario = {

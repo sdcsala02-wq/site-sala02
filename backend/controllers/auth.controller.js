@@ -7,6 +7,9 @@ const {
 } = require("../services/auditoria.service");
 
 const NOME_COOKIE_TOKEN = "sala02_token";
+const ALGORITMO_JWT = "HS256";
+const EMISSOR_JWT = "sala02-api";
+const AUDIENCIA_JWT = "sala02-portal";
 const DURACAO_TOKEN_MS =
   8 * 60 * 60 * 1000;
 
@@ -141,6 +144,9 @@ function gerarToken(usuario, contexto = {}) {
     },
     process.env.JWT_SECRET,
     {
+      algorithm: ALGORITMO_JWT,
+      issuer: EMISSOR_JWT,
+      audience: AUDIENCIA_JWT,
       expiresIn: "8h"
     }
   );
@@ -414,8 +420,6 @@ async function login(req, res) {
 
     return res.json({
       sucesso: true,
-
-      token,
 
       login_via: acesso.loginVia,
 

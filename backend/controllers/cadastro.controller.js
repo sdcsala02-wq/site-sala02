@@ -318,7 +318,7 @@ async function cadastro(req, res) {
             $4,
             $5,
             'CLIENTE',
-            'ATIVO',
+            'PENDENTE',
             FALSE
           )
           RETURNING
@@ -481,7 +481,7 @@ async function cadastro(req, res) {
     return res.status(201).json({
       sucesso: true,
       mensagem:
-        "Cadastro realizado com sucesso.",
+        "Cadastro recebido e aguardando validacao.",
 
       conta: {
         uuid: usuario.uuid,

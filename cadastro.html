@@ -786,16 +786,12 @@ async function enviarCadastro(evento) {
 
     exibirMensagem(
       dados.mensagem ||
-        "Cadastro realizado com sucesso.",
+        "Solicitacao recebida. Aguarde a validacao da Sala 02.",
       "sucesso"
     );
 
     formCadastro.reset();
     atualizarTipoPessoa();
-
-    window.setTimeout(() => {
-      window.location.href = "cliente.html";
-    }, 1600);
 
   } catch (erro) {
     console.error(

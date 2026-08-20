@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -151,6 +152,25 @@ app.get("/", async (req, res) => {
   }
 });
 
+
+// PREVIEW_CEO_STATIC_ROUTES
+const previewCeoPublico = path.join(
+  __dirname,
+  "public-preview"
+);
+
+app.use(
+  express.static(
+    previewCeoPublico,
+    {
+      index: false,
+      dotfiles: "deny",
+      fallthrough: true,
+      etag: true,
+      maxAge: 0
+    }
+  )
+);
 app.use((req, res) => {
   return res.status(404).json({
     erro: "Rota nao encontrada."

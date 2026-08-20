@@ -277,7 +277,195 @@
         gap: 15px;
       }
     }
-  </style>
+    
+    /* LOGIN-ADMIN-SALA02-DEFINITIVO */
+
+    #loginCeo {
+      position: fixed;
+      inset: 0;
+
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+
+      box-sizing: border-box;
+
+      display: none;
+      align-items: center;
+      justify-content: center;
+
+      padding: 24px;
+
+      background: #03172e;
+
+      z-index: 9999;
+    }
+
+    #loginCeo.ativo {
+      display: flex;
+    }
+
+    #loginCeo > div {
+      position: relative;
+
+      width: min(390px, 100%);
+
+      margin: 0;
+      padding: 36px 34px;
+
+      box-sizing: border-box;
+
+      border-radius: 28px;
+
+      background: #f3efe8;
+
+      box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.30),
+        0 8px 24px rgba(0, 0, 0, 0.14);
+    }
+
+    #loginCeo h1,
+    #loginCeo h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+
+      color: #082850;
+    }
+
+    #loginCeo p {
+      margin-top: 0;
+      margin-bottom: 22px;
+
+      color: #41546b;
+
+      line-height: 1.4;
+    }
+
+    #loginCeo input {
+      display: block;
+
+      width: 100%;
+      height: 48px;
+
+      box-sizing: border-box;
+
+      margin: 0 0 14px 0;
+      padding: 0 16px;
+
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+
+      outline: none;
+
+      background: #eaf0f8;
+      color: #082850;
+
+      font-size: 15px;
+    }
+
+    #loginCeo input:focus {
+      border-color: #d9aa58;
+
+      box-shadow:
+        0 0 0 4px
+        rgba(217, 170, 88, 0.18);
+    }
+
+    #loginCeo button {
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      width: 100%;
+      min-height: 48px;
+
+      box-sizing: border-box;
+
+      margin: 0 0 10px 0;
+      padding: 12px 16px;
+
+      border: none;
+      border-radius: 999px;
+
+      background: #082850;
+      color: #ffffff;
+
+      font-size: 15px;
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    #loginCeo a {
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      width: 100%;
+      min-height: 44px;
+
+      box-sizing: border-box;
+
+      margin-top: 10px;
+      padding: 10px 14px;
+
+      border-radius: 13px;
+
+      text-align: center;
+      text-decoration: none;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      color: #082850;
+    }
+
+    #loginCeo a[href*="redefinir-senha"] {
+      background: #ffffff;
+
+      border:
+        1px solid #cbd5e1;
+    }
+
+    #loginCeo a[href*="index"] {
+      background: #f8f5ef;
+
+      border:
+        1px solid #ddd5c8;
+    }
+
+    #loginCeo button:hover,
+    #loginCeo a:hover {
+      transform:
+        translateY(-1px);
+    }
+
+    #loginCeo button:focus-visible,
+    #loginCeo a:focus-visible,
+    #loginCeo input:focus-visible {
+      outline:
+        3px solid
+        rgba(217, 170, 88, 0.35);
+
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 520px) {
+
+      #loginCeo {
+        padding: 16px;
+      }
+
+      #loginCeo > div {
+        padding: 28px 22px;
+
+        border-radius: 22px;
+      }
+    }
+
+</style>
 </head>
 
 <body>
@@ -290,7 +478,7 @@
         Acesse sua área exclusiva para gerenciar clientes, processos e movimentações em tempo real.
       </p>
 
-      <input id="ceoUser" placeholder="Digite seu usuário">
+      <input id="ceoUser" placeholder="Digite seu CPF ou CNPJ">
       <input id="ceoSenha" type="password" placeholder="Digite sua senha">
 
       <button type="button" class="btn-dark" onclick="entrarCEO()">
@@ -420,65 +608,195 @@
   </section>
 
   <script>
-    const API = "http://localhost:3000";
+    const API_PRODUCAO =
+      "https://site-sala02-production.up.railway.app";
 
-    function getTokenCEO() {
-      return localStorage.getItem("tokenSala02");
+    const API =
+      ["localhost", "127.0.0.1"].includes(
+        window.location.hostname
+      )
+        ? "http://127.0.0.1:3000"
+        : API_PRODUCAO;
+
+    function escaparHtml(valor) {
+      return String(valor ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
-    function headersCEO() {
+    function mostrarLogin() {
+      const login =
+        document.getElementById(
+          "loginCeo"
+        );
+
+      const dashboard =
+        document.getElementById(
+          "dashboard"
+        );
+
+      login.classList.add(
+        "ativo"
+      );
+
+      dashboard.style.display =
+        "none";
+    }
+
+    async function requisicao(
+      caminho,
+      opcoes = {}
+    ) {
+      const resposta = await fetch(
+        API + caminho,
+        {
+          ...opcoes,
+          credentials: "include",
+          headers: {
+            ...(opcoes.headers || {})
+          }
+        }
+      );
+
+      let dados = {};
+
+      try {
+        dados = await resposta.json();
+      } catch {
+        dados = {};
+      }
+
       return {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + getTokenCEO()
+        resposta,
+        dados
       };
     }
 
     async function entrarCEO() {
-      const usuario = document.getElementById("ceoUser").value.trim();
-      const senha = document.getElementById("ceoSenha").value.trim();
+      const documento =
+        document
+          .getElementById("ceoUser")
+          .value
+          .trim();
+
+      const senha =
+        document
+          .getElementById("ceoSenha")
+          .value;
+
+      if (!documento || !senha) {
+        alert(
+          "Informe CPF ou CNPJ e senha."
+        );
+        return;
+      }
 
       try {
-        const resposta = await fetch(API + "/api/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            usuario: usuario,
-            senha: senha
-          })
-        });
-
-        const data = await resposta.json();
+        const { resposta, dados } =
+          await requisicao(
+            "/api/auth/login",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+              body: JSON.stringify({
+                documento,
+                senha
+              })
+            }
+          );
 
         if (!resposta.ok) {
-          alert(data.erro || "Usuário ou senha inválidos.");
+          alert(
+            dados.erro ||
+            "CPF/CNPJ ou senha inválidos."
+          );
           return;
         }
 
-        localStorage.setItem("tokenSala02", data.token);
-        localStorage.setItem("usuarioSala02", JSON.stringify(data.usuario));
+        if (
+          !dados.usuario ||
+          !["CEO", "ADMIN"].includes(
+            dados.usuario.perfil
+          )
+        ) {
+          await requisicao(
+            "/api/auth/logout",
+            {
+              method: "POST"
+            }
+          );
+
+          alert(
+            "Esta conta não possui acesso administrativo."
+          );
+
+          mostrarLogin();
+          return;
+        }
+
+        document.getElementById(
+          "ceoSenha"
+        ).value = "";
+
         abrirPainel();
 
       } catch (erro) {
-        console.log("ERRO REAL:", erro);
-        alert("Erro ao conectar com o servidor. Verifique se o server.js está rodando.");
+        console.error(
+          "Erro no login:",
+          erro
+        );
+
+        alert(
+          "Não foi possível conectar ao servidor."
+        );
       }
     }
-
     function abrirPainel() {
-      document.getElementById("loginCeo").style.display = "none";
-      document.getElementById("dashboard").style.display = "block";
+      const login =
+        document.getElementById(
+          "loginCeo"
+        );
+
+      const dashboard =
+        document.getElementById(
+          "dashboard"
+        );
+
+      login.classList.remove(
+        "ativo"
+      );
+
+      dashboard.style.display =
+        "block";
+
       carregarClientes();
       carregarTotalProcessos();
     }
 
-    function sairCEO() {
-      localStorage.removeItem("tokenSala02");
-      localStorage.removeItem("usuarioSala02");
+    async function sairCEO() {
+      try {
+        await requisicao(
+          "/api/auth/logout",
+          {
+            method: "POST"
+          }
+        );
+      } catch (erro) {
+        console.error(
+          "Erro ao encerrar sessão:",
+          erro
+        );
+      }
+
+      mostrarLogin();
       location.reload();
     }
-
     function abrirPagina(id, botao) {
       document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
       document.getElementById(id).classList.add("active");
@@ -507,141 +825,212 @@
     }
 
     async function cadastrarCliente() {
-      const nome = document.getElementById("nome").value;
-      const cpf = document.getElementById("cpf").value;
-      const senha = document.getElementById("senha").value;
-
-      if (!nome || !cpf || !senha) {
-        alert("Preencha nome, CPF e senha.");
-        return;
-      }
-
-      try {
-        const resposta = await fetch(API + "/clientes", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            identificador: usuario,
-            senha: senha
-          })
-        });
-
-        const data = await resposta.json();
-
-        if (data.id) {
-          alert("Cliente cadastrado com sucesso.");
-
-          document.getElementById("nome").value = "";
-          document.getElementById("cpf").value = "";
-          document.getElementById("senha").value = "";
-
-          carregarClientes();
-        } else {
-          alert(data.erro || "Erro ao cadastrar cliente.");
-        }
-      } catch (error) {
-        alert("Erro ao conectar com o servidor.");
-        console.log(error);
-      }
+      alert(
+        "Cadastro administrativo temporariamente bloqueado durante a migração segura."
+      );
     }
-
     async function carregarClientes() {
-      const token = getTokenCEO();
-
-      if (!token) {
-        sairCEO();
-        return;
-      }
-
       try {
-        const resposta = await fetch(API + "/clientes", {
-          method: "GET",
-          headers: {
-            "Authorization": "Bearer " + token
-          }
-        });
+        const { resposta, dados } =
+          await requisicao(
+            "/api/admin/clientes"
+          );
 
-        const clientes = await resposta.json();
-
-        if (!Array.isArray(clientes)) {
-          console.log("Erro ao carregar clientes:", clientes);
-          document.getElementById("totalClientes").innerText = "0";
-          document.getElementById("listaClientes").innerHTML =
-            `<div class="empty">Erro ao carregar clientes. Faça login novamente.</div>`;
+        if (
+          resposta.status === 401 ||
+          resposta.status === 403
+        ) {
+          mostrarLogin();
           return;
         }
 
-        document.getElementById("totalClientes").innerText = clientes.length;
+        if (
+          !resposta.ok ||
+          !Array.isArray(dados)
+        ) {
+          throw new Error(
+            dados.erro ||
+            "Resposta inválida."
+          );
+        }
 
-        const lista = document.getElementById("listaClientes");
-        const selectCriar = document.getElementById("clienteSelect");
-        const selectBusca = document.getElementById("clienteBusca");
+        const clientes = dados;
 
-        selectCriar.innerHTML = `<option value="">Selecione um cliente</option>`;
-        selectBusca.innerHTML = `<option value="">Selecione um cliente para consultar</option>`;
+        document.getElementById(
+          "totalClientes"
+        ).innerText =
+          clientes.length;
+
+        const lista =
+          document.getElementById(
+            "listaClientes"
+          );
+
+        const selectCriar =
+          document.getElementById(
+            "clienteSelect"
+          );
+
+        const selectBusca =
+          document.getElementById(
+            "clienteBusca"
+          );
+
+        selectCriar.innerHTML =
+          `<option value="">Selecione um cliente</option>`;
+
+        selectBusca.innerHTML =
+          `<option value="">Selecione um cliente para consultar</option>`;
 
         if (!clientes.length) {
-          lista.innerHTML = `<div class="empty">Nenhum cliente cadastrado.</div>`;
+          lista.innerHTML =
+            `<div class="empty">Nenhum cliente cadastrado.</div>`;
           return;
         }
 
-        lista.innerHTML = clientes.map(c => `
-          <div class="cliente-card">
-            <strong>${c.nome}</strong>
-            <small>ID: ${c.id} | CPF: ${formatarCpf(c.cpf)}</small>
+        lista.innerHTML =
+          clientes
+            .map((c) => {
 
-            <div class="actions">
-              <button onclick="selecionarCliente(${c.id})">Criar processo</button>
-              <button onclick="consultarCliente(${c.id})">Ver processos</button>
-            </div>
-          </div>
-        `).join("");
+              const empresas =
+                Array.isArray(c.empresas)
+                  ? c.empresas
+                  : [];
 
-        clientes.forEach(c => {
-          const opt1 = document.createElement("option");
+              const empresa =
+                empresas[0] || null;
+
+              const documentoEmpresa =
+                empresa?.cnpj
+                  ? ` | CNPJ: ${escaparHtml(
+                      empresa.cnpj
+                    )}`
+                  : "";
+
+              return `
+                <div class="cliente-card">
+
+                  <strong>
+                    ${escaparHtml(c.nome)}
+                  </strong>
+
+                  <small>
+                    ID: ${c.id}
+                    | CPF:
+                    ${escaparHtml(
+                      c.cpf || "-"
+                    )}
+                    ${documentoEmpresa}
+                  </small>
+
+                  <div class="actions">
+
+                    <button
+                      onclick="selecionarCliente(${c.id})"
+                    >
+                      Criar processo
+                    </button>
+
+                    <button
+                      onclick="consultarCliente(${c.id})"
+                    >
+                      Ver processos
+                    </button>
+
+                  </div>
+
+                </div>
+              `;
+            })
+            .join("");
+
+        clientes.forEach((c) => {
+
+          const opt1 =
+            document.createElement(
+              "option"
+            );
+
           opt1.value = c.id;
-          opt1.textContent = `${c.nome} - CPF: ${formatarCpf(c.cpf)}`;
-          selectCriar.appendChild(opt1);
 
-          const opt2 = document.createElement("option");
+          opt1.textContent =
+            `${c.nome} - CPF: ${
+              c.cpf || "-"
+            }`;
+
+          selectCriar.appendChild(
+            opt1
+          );
+
+          const opt2 =
+            document.createElement(
+              "option"
+            );
+
           opt2.value = c.id;
-          opt2.textContent = `${c.nome} - CPF: ${formatarCpf(c.cpf)}`;
-          selectBusca.appendChild(opt2);
+
+          opt2.textContent =
+            `${c.nome} - CPF: ${
+              c.cpf || "-"
+            }`;
+
+          selectBusca.appendChild(
+            opt2
+          );
         });
-      } catch (error) {
-        console.log(error);
-        document.getElementById("totalClientes").innerText = "0";
-        document.getElementById("listaClientes").innerHTML =
-          `<div class="empty">Erro ao conectar com o servidor.</div>`;
+
+      } catch (erro) {
+
+        console.error(
+          "Erro ao carregar clientes:",
+          erro
+        );
+
+        document.getElementById(
+          "totalClientes"
+        ).innerText = "0";
+
+        document.getElementById(
+          "listaClientes"
+        ).innerHTML =
+          `<div class="empty">Erro ao carregar clientes.</div>`;
       }
     }
-
     async function carregarTotalProcessos() {
-      const token = getTokenCEO();
-
-      if (!token) return;
-
       try {
-        const resposta = await fetch(API + "/processos", {
-          method: "GET",
-          headers: {
-            "Authorization": "Bearer " + token
-          }
-        });
+        const { resposta, dados } =
+          await requisicao(
+            "/api/admin/processos"
+          );
 
-        const processos = await resposta.json();
-
-        if (Array.isArray(processos)) {
-          document.getElementById("totalProcessos").innerText = processos.length;
-        } else {
-          document.getElementById("totalProcessos").innerText = "0";
+        if (
+          resposta.status === 401 ||
+          resposta.status === 403
+        ) {
+          mostrarLogin();
+          return;
         }
-      } catch (error) {
-        console.log(error);
-        document.getElementById("totalProcessos").innerText = "0";
+
+        document.getElementById(
+          "totalProcessos"
+        ).innerText =
+          resposta.ok &&
+          Array.isArray(dados)
+            ? dados.length
+            : "0";
+
+      } catch (erro) {
+
+        console.error(
+          "Erro ao carregar processos:",
+          erro
+        );
+
+        document.getElementById(
+          "totalProcessos"
+        ).innerText = "0";
       }
     }
-
     function selecionarCliente(id) {
       document.getElementById("clienteSelect").value = id;
       abrirPagina("novoProcessoPage", document.querySelectorAll(".menu button")[2]);
@@ -654,47 +1043,20 @@
     }
 
     async function criarProcesso() {
-      const cliente_id = document.getElementById("clienteSelect").value;
-      const tipo = document.getElementById("tipo").value;
-      const status = document.getElementById("status").value;
-      const descricao = document.getElementById("descricao").value;
-
-      if (!cliente_id || !tipo || !status || !descricao) {
-        alert("Preencha todos os dados do processo.");
-        return;
-      }
-
-      try {
-        const resposta = await fetch(API + "/processos", {
-          method: "POST",
-          headers: headersCEO(),
-          body: JSON.stringify({ cliente_id, tipo, status, descricao })
-        });
-
-        const data = await resposta.json();
-
-        if (data.id) {
-          alert("Processo criado com sucesso.");
-
-          document.getElementById("tipo").value = "";
-          document.getElementById("descricao").value = "";
-
-          document.getElementById("clienteBusca").value = cliente_id;
-          abrirPagina("processosPage", document.querySelectorAll(".menu button")[3]);
-          buscarProcessos();
-          carregarTotalProcessos();
-        } else {
-          alert(data.erro || "Erro ao criar processo.");
-        }
-      } catch (error) {
-        alert("Erro ao conectar com o servidor.");
-        console.log(error);
-      }
+      alert(
+        "Criação de processo será habilitada na próxima etapa de segurança."
+      );
     }
-
     async function buscarProcessos() {
-      const clienteId = document.getElementById("clienteBusca").value;
-      const resultado = document.getElementById("resultadoProcessos");
+      const clienteId =
+        document.getElementById(
+          "clienteBusca"
+        ).value;
+
+      const resultado =
+        document.getElementById(
+          "resultadoProcessos"
+        );
 
       if (!clienteId) {
         resultado.innerHTML = "";
@@ -703,86 +1065,172 @@
       }
 
       try {
-        const resposta = await fetch(API + "/processos/" + clienteId);
-        const processos = await resposta.json();
+        const { resposta, dados } =
+          await requisicao(
+            `/api/admin/clientes/${clienteId}/processos`
+          );
 
-        if (!Array.isArray(processos)) {
-          resultado.innerHTML = `<div class="empty">Erro ao buscar processos.</div>`;
+        if (
+          resposta.status === 401 ||
+          resposta.status === 403
+        ) {
+          mostrarLogin();
           return;
         }
+
+        if (
+          !resposta.ok ||
+          !Array.isArray(
+            dados.processos
+          )
+        ) {
+          throw new Error(
+            dados.erro ||
+            "Resposta inválida."
+          );
+        }
+
+        const processos =
+          dados.processos;
 
         if (!processos.length) {
-          resultado.innerHTML = `<div class="empty">Nenhum processo cadastrado para este cliente.</div>`;
+          resultado.innerHTML =
+            `<div class="empty">Nenhum processo cadastrado para este cliente.</div>`;
           return;
         }
 
-        resultado.innerHTML = processos.map(p => `
-          <div class="processo-card">
-            <strong>${p.tipo}</strong>
+        resultado.innerHTML =
+          processos
+            .map((p) => {
 
-            <span class="status">${p.status}</span>
+              const titulo =
+                p.tipo_servico ||
+                p.titulo ||
+                "Processo";
 
-            <p>${p.descricao}</p>
+              const data =
+                p.atualizado_em
+                  ? new Date(
+                      p.atualizado_em
+                    ).toLocaleString(
+                      "pt-BR"
+                    )
+                  : "-";
 
-            <small>Atualizado em: ${p.data}</small>
+              return `
+                <div class="processo-card">
 
-            <div style="margin-top:12px;">
-              <select id="status_${p.id}">
-                <option ${p.status === "Recebido" ? "selected" : ""}>Recebido</option>
-                <option ${p.status === "Em análise documental" ? "selected" : ""}>Em análise documental</option>
-                <option ${p.status === "Aguardando documento" ? "selected" : ""}>Aguardando documento</option>
-                <option ${p.status === "Protocolado" ? "selected" : ""}>Protocolado</option>
-                <option ${p.status === "Em andamento" ? "selected" : ""}>Em andamento</option>
-                <option ${p.status === "Em exigência" ? "selected" : ""}>Em exigência</option>
-                <option ${p.status === "Concluído" ? "selected" : ""}>Concluído</option>
-              </select>
+                  <strong>
+                    ${escaparHtml(
+                      titulo
+                    )}
+                  </strong>
 
-              <button onclick="atualizarStatus(${p.id})">
-                Atualizar Status
-              </button>
-            </div>
-          </div>
-        `).join("");
+                  <span class="status">
+                    ${escaparHtml(
+                      p.status
+                    )}
+                  </span>
 
-      } catch (error) {
-        console.log(error);
-        resultado.innerHTML = `<div class="empty">Erro ao conectar com o servidor.</div>`;
+                  <p>
+                    ${escaparHtml(
+                      p.descricao || ""
+                    )}
+                  </p>
+
+                  <small>
+                    Código:
+                    ${escaparHtml(
+                      p.codigo_sdc || "-"
+                    )}
+                    | Atualizado:
+                    ${escaparHtml(
+                      data
+                    )}
+                  </small>
+
+                  <div
+                    style="margin-top:12px;"
+                  >
+
+                    <select
+                      id="status_${p.id}"
+                      disabled
+                    >
+                      <option>
+                        ${escaparHtml(
+                          p.status
+                        )}
+                      </option>
+                    </select>
+
+                    <button
+                      onclick="atualizarStatus(${p.id})"
+                    >
+                      Atualizar Status
+                    </button>
+
+                  </div>
+
+                </div>
+              `;
+            })
+            .join("");
+
+      } catch (erro) {
+
+        console.error(
+          "Erro ao consultar processos:",
+          erro
+        );
+
+        resultado.innerHTML =
+          `<div class="empty">Erro ao buscar processos.</div>`;
       }
     }
-
     async function atualizarStatus(id) {
-      const novoStatus = document.getElementById("status_" + id).value;
+      alert(
+        "Alteração de status será habilitada na próxima etapa de segurança."
+      );
+    }
+    window.onload = async () => {
+      mostrarLogin();
 
       try {
-        const resposta = await fetch(API + "/processos/" + id, {
-          method: "PUT",
-          headers: headersCEO(),
-          body: JSON.stringify({ status: novoStatus })
-        });
-
-        const data = await resposta.json();
+        const { resposta, dados } =
+          await requisicao(
+            "/api/auth/me"
+          );
 
         if (!resposta.ok) {
-          alert(data.erro || "Erro ao atualizar status.");
           return;
         }
 
-        alert("Status atualizado com sucesso!");
+        if (
+          !["CEO", "ADMIN"].includes(
+            dados.perfil
+          )
+        ) {
+          await requisicao(
+            "/api/auth/logout",
+            {
+              method: "POST"
+            }
+          );
 
-        buscarProcessos();
-        carregarTotalProcessos();
+          return;
+        }
 
-      } catch (error) {
-        alert("Erro ao conectar com o servidor.");
-        console.log(error);
-      }
-    }
-
-    window.onload = () => {
-      const token = localStorage.getItem("tokenSala02");
-
-      if (token) {
         abrirPainel();
+
+      } catch (erro) {
+
+        console.error(
+          "Erro ao recuperar sessão:",
+          erro
+        );
+
+        mostrarLogin();
       }
     };
   </script>

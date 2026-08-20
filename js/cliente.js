@@ -14,7 +14,7 @@
   const API =
     host === "localhost" ||
     host === "127.0.0.1"
-      ? "http://127.0.0.1:3102"
+      ? "http://127.0.0.1:3000"
       : API_PRODUCAO;
 
   function somenteNumeros(valor) {

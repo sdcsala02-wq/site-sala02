@@ -21,11 +21,32 @@ function valorBooleano(valor) {
   );
 }
 
+
+/* VALIDACAO-CADASTRO-BACKEND-2026 */
+
+function normalizarCNPJ(valor) {
+  return String(valor || "")
+    .trim()
+    .toUpperCase()
+    .replace(
+      /[^A-Z0-9]/g,
+      ""
+    );
+}
 function validarCPF(valor) {
   const cpf = somenteNumeros(valor);
 
   if (cpf.length !== 11) return false;
   if (/^(\d)\1{10}$/.test(cpf)) return false;
+
+  if (
+    new Set([
+      "12345678909",
+      "01234567890"
+    ]).has(cpf)
+  ) {
+    return false;
+  }
 
   let soma = 0;
 
@@ -99,6 +120,67 @@ function validarEmail(valor) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function validarTelefone(valor) {
+  const telefone =
+    somenteNumeros(valor);
+
+  if (
+    !/^\d{10,11}$/.test(
+      telefone
+    )
+  ) {
+    return false;
+  }
+
+  if (
+    telefone.startsWith("00")
+  ) {
+    return false;
+  }
+
+  if (
+    /^(\d)\1+$/.test(
+      telefone
+    )
+  ) {
+    return false;
+  }
+
+  const numero =
+    telefone.slice(2);
+
+  if (
+    /^(\d)\1{3,}(\d)\2{3,}$/.test(
+      numero
+    )
+  ) {
+    return false;
+  }
+
+  const sequencias =
+    new Set([
+      "12345678",
+      "123456789",
+      "01234567",
+      "012345678",
+      "87654321",
+      "987654321"
+    ]);
+
+  if (
+    sequencias.has(numero)
+  ) {
+    return false;
+  }
+
+  if (
+    /^[01]/.test(numero)
+  ) {
+    return false;
+  }
+
+  return true;
+}
 function validarSenha(valor) {
   const senha = String(valor || "");
 
@@ -233,7 +315,7 @@ async function cadastro(req, res) {
   if (!validarSenha(senha)) {
     return res.status(400).json({
       erro:
-        "A senha deve ter entre 8 e 72 caracteres, com pelo menos uma letra e um numero."
+        "A senha deve ter entre 10 e 72 caracteres, com maiuscula, minuscula, numero e simbolo, sem sequencias obvias."
     });
   }
 

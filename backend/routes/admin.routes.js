@@ -10,13 +10,23 @@ const {
 );
 
 const {
+  criarProcesso,
+  atualizarStatusProcesso,
+  ativarCliente
+} = require(
+  "../controllers/admin-write.controller"
+);
+
+const {
   autenticar,
-  permitirPerfis
+  permitirPerfis,
+  protegerCsrf
 } = require(
   "../middlewares/auth.middleware"
 );
 
-const router = express.Router();
+const router =
+  express.Router();
 
 router.use(
   autenticar,
@@ -26,14 +36,16 @@ router.use(
   )
 );
 
-router.use((req, res, next) => {
-  res.set(
-    "Cache-Control",
-    "no-store"
-  );
+router.use(
+  (req, res, next) => {
+    res.set(
+      "Cache-Control",
+      "no-store"
+    );
 
-  next();
-});
+    next();
+  }
+);
 
 router.get(
   "/resumo",
@@ -53,6 +65,24 @@ router.get(
 router.get(
   "/clientes/:id/processos",
   listarProcessosCliente
+);
+
+router.patch(
+  "/clientes/:id/ativar",
+  protegerCsrf,
+  ativarCliente
+);
+
+router.post(
+  "/processos",
+  protegerCsrf,
+  criarProcesso
+);
+
+router.patch(
+  "/processos/:id/status",
+  protegerCsrf,
+  atualizarStatusProcesso
 );
 
 module.exports = router;

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -135,7 +135,7 @@
     <h1>SALA 02</h1>
 
     <p>
-      Informe seu CPF, CNPJ ou e-mail cadastrado. Enviaremos um token de segurança
+      Informe seu CPF, CNPJ ou e-mail cadastrado. Enviaremos um token de seguranÃ§a
       para redefinir sua senha.
     </p>
 
@@ -144,7 +144,7 @@
       <input type="text" id="identificador" placeholder="Digite seu CPF, CNPJ ou e-mail" required>
 
       <button type="submit" class="btn-dark">
-        Enviar token de segurança
+        Enviar token de seguranÃ§a
       </button>
 
     </form>
@@ -152,13 +152,17 @@
     <p id="mensagem" class="login-message"></p>
 
     <a href="cliente.html" class="back-link">
-      ← Voltar para o login
+      â† Voltar para o login
     </a>
 
   </div>
 
   <script>
-    const API = "http://127.0.0.1:3000";
+    const API =
+  location.hostname === "localhost" ||
+  location.hostname === "127.0.0.1"
+    ? "http://127.0.0.1:3000"
+    : "https://site-sala02-production.up.railway.app";
 
     document.getElementById("formRecuperarSenha").addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -175,7 +179,7 @@
       }
 
       try {
-        mensagem.innerText = "Enviando token de segurança...";
+        mensagem.innerText = "Enviando token de seguranÃ§a...";
 
         const resposta = await fetch(API + "/recuperar-senha", {
           method: "POST",

@@ -1,4 +1,5 @@
-﻿(function () {
+(function () {
+  "use strict";
 
   const API =
     location.hostname === "localhost" ||
@@ -6,73 +7,101 @@
       ? "http://127.0.0.1:3000"
       : "https://site-sala02-production.up.railway.app";
 
-  async function carregarUsuario() {
+  async function requisicao(caminho) {
+    const resposta = await fetch(
+      API + caminho,
+      {
+        credentials: "include"
+      }
+    );
+
+    let dados = {};
 
     try {
+      dados = await resposta.json();
+    } catch (_) {}
 
-      const resposta = await fetch(
-        API + "/api/auth/me",
-        {
-          credentials: "include"
-        }
+    if (!resposta.ok) {
+      throw new Error(
+        dados.erro ||
+        "Falha ao consultar sistema."
       );
+    }
 
-      if (!resposta.ok) {
-        location.href = "admin.html";
-        return;
-      }
+    return dados;
+  }
 
-      const dados = await resposta.json();
+  async function iniciar() {
+    try {
+
+      const dados = await requisicao(
+        "/api/auth/me"
+      );
 
       const usuario =
         dados.usuario || dados;
 
       if (
-        String(usuario.perfil || "").toUpperCase()
-        !== "CEO"
+        String(
+          usuario.perfil || ""
+        ).toUpperCase() !== "CEO"
       ) {
-        location.href = "admin.html";
+        location.href =
+          "admin.html";
+
         return;
       }
 
-      const nome =
-        document.getElementById("usuarioNome");
+      document.getElementById(
+        "usuarioNome"
+      ).textContent =
+        usuario.nome || "CEO Sala 02";
 
-      const perfil =
-        document.getElementById("usuarioPerfil");
+      document.getElementById(
+        "usuarioPerfil"
+      ).textContent = "CEO";
 
-      const boasVindas =
-        document.getElementById("boasVindas");
+      const primeiroNome =
+        String(
+          usuario.nome || "CEO"
+        )
+          .trim()
+          .split(/\s+/)[0];
 
-      if (nome) {
-        nome.textContent =
-          usuario.nome || "CEO Sala 02";
-      }
+      document.getElementById(
+        "boasVindas"
+      ).textContent =
+        "Bem-vindo, " +
+        primeiroNome;
 
-      if (perfil) {
-        perfil.textContent =
-          usuario.perfil || "CEO";
-      }
-
-      if (boasVindas) {
-        boasVindas.textContent =
-          "Bem-vindo, " +
-          String(usuario.nome || "CEO")
-            .split(" ")[0];
-      }
-
-    }
-    catch (erro) {
-
-      console.error(
-        "Falha ao validar sessão:",
-        erro
+      const resumo = await requisicao(
+        "/api/ceo/resumo"
       );
 
-    }
+      document.getElementById(
+        "totalClientes"
+      ).textContent =
+        resumo.clientes_total ?? 0;
 
+      document.getElementById(
+        "totalProcessos"
+      ).textContent =
+        resumo.processos_total ?? 0;
+
+      document.getElementById(
+        "totalPendencias"
+      ).textContent =
+        resumo.pendencias_total ?? 0;
+
+    } catch (erro) {
+
+      console.error(
+        "Erro Dashboard CEO:",
+        erro
+      );
+    }
   }
 
-  carregarUsuario();
+  iniciar();
 
 })();

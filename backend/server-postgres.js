@@ -10,6 +10,7 @@ const authRoutes = require("./routes/auth.routes");
 const publicRoutes = require("./routes/public.routes");
 const portalRoutes = require("./routes/portal.routes");
 const adminRoutes = require("./routes/admin.routes");
+const ceoRoutes = require("./routes/ceo.routes");
 
 const app = express();
 
@@ -112,6 +113,11 @@ app.use(
 app.use(
   "/api/admin",
   adminRoutes
+);
+
+app.use(
+  "/api/ceo",
+  ceoRoutes
 );
 
 app.get("/", async (req, res) => {

@@ -142,6 +142,12 @@ function gerarToken(usuario, contexto = {}) {
       nome: usuario.nome,
       perfil: usuario.perfil,
 
+      // SESSAO_VERSAO_TOKEN_V1
+      sessaoVersao:
+        Number(
+          usuario.sessao_versao || 1
+        ),
+
       loginVia: contexto.loginVia || "CPF",
 
       empresaId:
@@ -354,12 +360,17 @@ async function login(req, res) {
 
     const segurancaLogin =
       await pool.query(
-        "SELECT tentativas_login, ultima_tentativa_login, bloqueado_ate FROM usuarios WHERE id = $1 LIMIT 1",
+        "SELECT tentativas_login, ultima_tentativa_login, bloqueado_ate, sessao_versao FROM usuarios WHERE id = $1 LIMIT 1",
         [usuario.id]
       );
 
     const estadoSeguranca =
       segurancaLogin.rows[0] || {};
+
+    usuario.sessao_versao =
+      Number(
+        estadoSeguranca.sessao_versao || 1
+      );
 
     if (
       estadoSeguranca.bloqueado_ate &&

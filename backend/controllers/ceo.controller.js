@@ -867,6 +867,11 @@ async function redefinirSenha(req, res) {
         SET
           senha_hash = $1,
           senha_alterada_em = NOW(),
+          sessao_versao =
+            sessao_versao + 1,
+          tentativas_login = 0,
+          ultima_tentativa_login = NULL,
+          bloqueado_ate = NULL,
           atualizado_em = NOW()
         WHERE id = $2
       `,
@@ -962,6 +967,11 @@ async function alterarStatus(req, res) {
         UPDATE usuarios
         SET
           status = $1,
+          sessao_versao =
+            sessao_versao + 1,
+          tentativas_login = 0,
+          ultima_tentativa_login = NULL,
+          bloqueado_ate = NULL,
           atualizado_em = NOW()
         WHERE id = $2
       `,

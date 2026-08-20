@@ -1,5 +1,8 @@
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const pool = require("../config/database");
+
+// SESSAO_REVOGAVEL_V1
 
 const NOME_COOKIE_TOKEN =
   "sala02_token";
@@ -84,7 +87,7 @@ function gerarTokenCsrf(
     .digest("hex");
 }
 
-function autenticar(req, res, next) {
+async function autenticar(req, res, next) {
   const token =
     obterToken(req);
 
@@ -102,8 +105,10 @@ function autenticar(req, res, next) {
     });
   }
 
+  let dados;
+
   try {
-    const dados =
+    dados =
       jwt.verify(
         token,
         process.env.JWT_SECRET,
@@ -117,30 +122,99 @@ function autenticar(req, res, next) {
             AUDIENCIA_JWT
         }
       );
-
-    req.tokenAutenticacao =
-      token;
-
-    req.usuario = {
-      id: dados.id,
-      uuid: dados.uuid,
-      nome: dados.nome,
-      perfil: dados.perfil,
-      loginVia:
-        dados.loginVia || "CPF",
-      empresaId:
-        dados.empresaId || null
-    };
-
-    next();
-
   } catch {
     return res.status(401).json({
       erro:
         "Token invalido ou expirado."
     });
   }
+
+  let estadoUsuario;
+
+  try {
+    const resultado =
+      await pool.query(
+        `
+          SELECT
+            id,
+            uuid,
+            nome,
+            perfil,
+            status,
+            sessao_versao
+          FROM usuarios
+          WHERE id = $1
+          LIMIT 1
+        `,
+        [dados.id]
+      );
+
+    estadoUsuario =
+      resultado.rows[0] || null;
+
+  } catch (erroBanco) {
+    console.error(
+      "Erro ao validar sessao no banco:",
+      erroBanco
+    );
+
+    return res.status(500).json({
+      erro:
+        "Servico de autenticacao temporariamente indisponivel."
+    });
+  }
+
+  const versaoToken =
+    Number(
+      dados.sessaoVersao || 1
+    );
+
+  const versaoBanco =
+    estadoUsuario
+      ? Number(
+          estadoUsuario.sessao_versao || 1
+        )
+      : 0;
+
+  if (
+    !estadoUsuario ||
+    estadoUsuario.status !== "ATIVO" ||
+    versaoToken !== versaoBanco
+  ) {
+    res.clearCookie(
+      NOME_COOKIE_TOKEN,
+      {
+        path: "/"
+      }
+    );
+
+    return res.status(401).json({
+      erro:
+        "Sessao expirada ou revogada. Entre novamente."
+    });
+  }
+
+  req.tokenAutenticacao =
+    token;
+
+  req.usuario = {
+    id:
+      estadoUsuario.id,
+    uuid:
+      estadoUsuario.uuid,
+    nome:
+      estadoUsuario.nome,
+    perfil:
+      estadoUsuario.perfil,
+    loginVia:
+      dados.loginVia || "CPF",
+    empresaId:
+      dados.empresaId || null
+  };
+
+  next();
 }
+
 
 function permitirPerfis(
   ...perfisPermitidos

@@ -85,6 +85,80 @@ function validarCNPJ(valor) {
   return segundo === Number(cnpj[13]);
 }
 
+
+// CADASTRO_SEGURO_BACKEND_V2
+
+function validarCadastroCritico(body) {
+  const cpfRaw =
+    String(
+      body.cpf || ""
+    ).trim();
+
+  if (
+    !/^[0-9.\-\s]+$/
+      .test(cpfRaw) ||
+    !validarCPF(cpfRaw)
+  ) {
+    return "CPF inválido.";
+  }
+
+  const telefoneRaw =
+    String(
+      body.telefone || ""
+    ).trim();
+
+  if (telefoneRaw) {
+    if (
+      !/^[0-9()\s+\-]+$/
+        .test(telefoneRaw)
+    ) {
+      return "Telefone contém caracteres inválidos.";
+    }
+
+    const telefone =
+      somenteNumeros(
+        telefoneRaw
+      );
+
+    if (
+      telefone.length !== 10 &&
+      telefone.length !== 11
+    ) {
+      return "Telefone inválido. Informe DDD e número.";
+    }
+  }
+
+  const cnpjRaw =
+    String(
+      body.cnpj || ""
+    ).trim();
+
+  if (cnpjRaw) {
+    if (
+      !/^[0-9.\/\-\s]+$/
+        .test(cnpjRaw) ||
+      !validarCNPJ(cnpjRaw)
+    ) {
+      return "CNPJ inválido.";
+    }
+  }
+
+  const im =
+    String(
+      body.inscricao_municipal || ""
+    ).trim();
+
+  if (
+    im &&
+    !/^\d{4}\/\d{2}$/
+      .test(im)
+  ) {
+    return "Inscrição Municipal inválida. Use o padrão 0000/00.";
+  }
+
+  return null;
+}
+
 function senhaForte(senha) {
   const valor = String(senha || "");
 
@@ -294,6 +368,18 @@ async function criarUsuario(req, res) {
     String(
       req.body.inscricao_estadual || ""
     ).trim();
+
+
+  const erroCadastroCritico =
+    validarCadastroCritico(
+      req.body
+    );
+
+  if (erroCadastroCritico) {
+    return res.status(400).json({
+      erro: erroCadastroCritico
+    });
+  }
 
   if (nome.length < 3) {
     return res.status(400).json({
@@ -554,6 +640,18 @@ async function atualizarUsuario(req, res) {
     String(
       req.body.inscricao_estadual || ""
     ).trim();
+
+
+  const erroCadastroCritico =
+    validarCadastroCritico(
+      req.body
+    );
+
+  if (erroCadastroCritico) {
+    return res.status(400).json({
+      erro: erroCadastroCritico
+    });
+  }
 
   if (nome.length < 3) {
     return res.status(400).json({

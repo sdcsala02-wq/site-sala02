@@ -574,12 +574,12 @@
 
             <label class="ceo-field">
               <span>CPF</span>
-              <input id="ceoCpf" required>
+              <input id="ceoCpf" inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00" required>
             </label>
 
             <label class="ceo-field">
               <span>Telefone</span>
-              <input id="ceoTelefone">
+              <input id="ceoTelefone" inputmode="tel" maxlength="15" autocomplete="tel" placeholder="(00) 00000-0000">
             </label>
 
             <label class="ceo-field ceo-wide">
@@ -621,12 +621,12 @@
 
             <label class="ceo-field">
               <span>CNPJ</span>
-              <input id="ceoCnpj">
+              <input id="ceoCnpj" inputmode="numeric" maxlength="18" autocomplete="off" placeholder="00.000.000/0000-00">
             </label>
 
             <label class="ceo-field">
               <span>Inscrição Municipal</span>
-              <input id="ceoIm">
+              <input id="ceoIm" inputmode="numeric" maxlength="7" autocomplete="off" placeholder="0000/00">
             </label>
 
             <label class="ceo-field ceo-wide">
@@ -738,7 +738,394 @@
     return dialog;
   }
 
+
+  // CADASTRO_SEGURO_CEO_V2
+
+  function formatarCpfSeguro(valor) {
+    const numeros =
+      somenteNumeros(valor)
+        .slice(0, 11);
+
+    return numeros
+      .replace(
+        /^(\d{3})(\d)/,
+        "$1.$2"
+      )
+      .replace(
+        /^(\d{3})\.(\d{3})(\d)/,
+        "$1.$2.$3"
+      )
+      .replace(
+        /^(\d{3})\.(\d{3})\.(\d{3})(\d)/,
+        "$1.$2.$3-$4"
+      );
+  }
+
+  function formatarTelefoneSeguro(valor) {
+    const numeros =
+      somenteNumeros(valor)
+        .slice(0, 11);
+
+    if (!numeros) {
+      return "";
+    }
+
+    if (numeros.length <= 2) {
+      return "(" + numeros;
+    }
+
+    if (numeros.length <= 6) {
+      return (
+        "(" +
+        numeros.slice(0, 2) +
+        ") " +
+        numeros.slice(2)
+      );
+    }
+
+    if (numeros.length <= 10) {
+      return (
+        "(" +
+        numeros.slice(0, 2) +
+        ") " +
+        numeros.slice(2, 6) +
+        "-" +
+        numeros.slice(6)
+      );
+    }
+
+    return (
+      "(" +
+      numeros.slice(0, 2) +
+      ") " +
+      numeros.slice(2, 7) +
+      "-" +
+      numeros.slice(7, 11)
+    );
+  }
+
+  function formatarCnpjSeguro(valor) {
+    const numeros =
+      somenteNumeros(valor)
+        .slice(0, 14);
+
+    return numeros
+      .replace(
+        /^(\d{2})(\d)/,
+        "$1.$2"
+      )
+      .replace(
+        /^(\d{2})\.(\d{3})(\d)/,
+        "$1.$2.$3"
+      )
+      .replace(
+        /^(\d{2})\.(\d{3})\.(\d{3})(\d)/,
+        "$1.$2.$3/$4"
+      )
+      .replace(
+        /^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/,
+        "$1.$2.$3/$4-$5"
+      );
+  }
+
+  function formatarImSeguro(valor) {
+    const numeros =
+      somenteNumeros(valor)
+        .slice(0, 6);
+
+    if (numeros.length <= 4) {
+      return numeros;
+    }
+
+    return (
+      numeros.slice(0, 4) +
+      "/" +
+      numeros.slice(4, 6)
+    );
+  }
+
+  function validarCpfSeguro(valor) {
+    const cpf =
+      somenteNumeros(valor);
+
+    if (cpf.length !== 11) {
+      return false;
+    }
+
+    if (/^(\d)\1{10}$/.test(cpf)) {
+      return false;
+    }
+
+    let soma = 0;
+
+    for (let i = 0; i < 9; i++) {
+      soma +=
+        Number(cpf[i]) *
+        (10 - i);
+    }
+
+    let d1 =
+      11 - (soma % 11);
+
+    if (d1 >= 10) {
+      d1 = 0;
+    }
+
+    if (
+      d1 !== Number(cpf[9])
+    ) {
+      return false;
+    }
+
+    soma = 0;
+
+    for (let i = 0; i < 10; i++) {
+      soma +=
+        Number(cpf[i]) *
+        (11 - i);
+    }
+
+    let d2 =
+      11 - (soma % 11);
+
+    if (d2 >= 10) {
+      d2 = 0;
+    }
+
+    return (
+      d2 === Number(cpf[10])
+    );
+  }
+
+  function validarCnpjSeguro(valor) {
+    const cnpj =
+      somenteNumeros(valor);
+
+    if (cnpj.length !== 14) {
+      return false;
+    }
+
+    if (/^(\d)\1{13}$/.test(cnpj)) {
+      return false;
+    }
+
+    function digito(base, pesos) {
+      let soma = 0;
+
+      for (
+        let i = 0;
+        i < pesos.length;
+        i++
+      ) {
+        soma +=
+          Number(base[i]) *
+          pesos[i];
+      }
+
+      const resto =
+        soma % 11;
+
+      return resto < 2
+        ? 0
+        : 11 - resto;
+    }
+
+    const d1 =
+      digito(
+        cnpj.slice(0, 12),
+        [
+          5, 4, 3, 2,
+          9, 8, 7, 6,
+          5, 4, 3, 2
+        ]
+      );
+
+    if (
+      d1 !==
+      Number(cnpj[12])
+    ) {
+      return false;
+    }
+
+    const d2 =
+      digito(
+        cnpj.slice(0, 13),
+        [
+          6, 5, 4, 3, 2,
+          9, 8, 7, 6,
+          5, 4, 3, 2
+        ]
+      );
+
+    return (
+      d2 ===
+      Number(cnpj[13])
+    );
+  }
+
+  function erroCampoSeguro(
+    campo,
+    mensagem
+  ) {
+    campo.setCustomValidity(
+      mensagem
+    );
+
+    campo.reportValidity();
+    campo.focus();
+
+    return false;
+  }
+
+  function validarCadastroSeguro() {
+    const cpf =
+      document.getElementById(
+        "ceoCpf"
+      );
+
+    const telefone =
+      document.getElementById(
+        "ceoTelefone"
+      );
+
+    const cnpj =
+      document.getElementById(
+        "ceoCnpj"
+      );
+
+    const im =
+      document.getElementById(
+        "ceoIm"
+      );
+
+    cpf.setCustomValidity("");
+    telefone.setCustomValidity("");
+    cnpj.setCustomValidity("");
+    im.setCustomValidity("");
+
+    if (
+      !validarCpfSeguro(
+        cpf.value
+      )
+    ) {
+      return erroCampoSeguro(
+        cpf,
+        "Informe um CPF válido."
+      );
+    }
+
+    const telefoneNumeros =
+      somenteNumeros(
+        telefone.value
+      );
+
+    if (
+      telefoneNumeros &&
+      telefoneNumeros.length !== 10 &&
+      telefoneNumeros.length !== 11
+    ) {
+      return erroCampoSeguro(
+        telefone,
+        "Informe telefone com DDD."
+      );
+    }
+
+    const cnpjNumeros =
+      somenteNumeros(
+        cnpj.value
+      );
+
+    if (
+      cnpjNumeros &&
+      !validarCnpjSeguro(
+        cnpj.value
+      )
+    ) {
+      return erroCampoSeguro(
+        cnpj,
+        "Informe um CNPJ válido."
+      );
+    }
+
+    if (
+      im.value &&
+      !/^\d{4}\/\d{2}$/
+        .test(im.value)
+    ) {
+      return erroCampoSeguro(
+        im,
+        "Use o padrão 0000/00."
+      );
+    }
+
+    return true;
+  }
+
+  document.addEventListener(
+    "input",
+    function (evento) {
+      const campo =
+        evento.target;
+
+      if (!campo || !campo.id) {
+        return;
+      }
+
+      const formatos = {
+        ceoCpf:
+          formatarCpfSeguro,
+
+        ceoTelefone:
+          formatarTelefoneSeguro,
+
+        ceoCnpj:
+          formatarCnpjSeguro,
+
+        ceoIm:
+          formatarImSeguro
+      };
+
+      const formato =
+        formatos[campo.id];
+
+      if (!formato) {
+        return;
+      }
+
+      campo.value =
+        formato(
+          campo.value
+        );
+
+      campo.setCustomValidity("");
+    }
+  );
+
   function preencher(id, valor) {
+
+    const formatosCadastro = {
+      ceoCpf:
+        formatarCpfSeguro,
+
+      ceoTelefone:
+        formatarTelefoneSeguro,
+
+      ceoCnpj:
+        formatarCnpjSeguro,
+
+      ceoIm:
+        formatarImSeguro
+    };
+
+    if (
+      formatosCadastro[id]
+    ) {
+      valor =
+        formatosCadastro[id](
+          valor
+        );
+    }
+
     document.getElementById(
       id
     ).value =
@@ -875,6 +1262,10 @@
     evento
   ) {
     evento.preventDefault();
+
+    if (!validarCadastroSeguro()) {
+      return;
+    }
 
     const id =
       document.getElementById(

@@ -654,9 +654,9 @@
           <h3>Senha inicial</h3>
 
           <p class="ceo-help">
-            Mínimo de 10 caracteres,
+            Mínimo de 8 caracteres,
             com letra maiúscula,
-            minúscula e número.
+            minúscula, número e caractere especial.
           </p>
 
           <div class="ceo-form-grid">
@@ -666,6 +666,7 @@
               <input
                 id="ceoSenha"
                 type="password"
+                minlength="8"
                 autocomplete="new-password"
               >
             </label>
@@ -675,6 +676,7 @@
               <input
                 id="ceoSenha2"
                 type="password"
+                minlength="8"
                 autocomplete="new-password"
               >
             </label>
@@ -1344,6 +1346,11 @@
           "ceoSenha2"
         ).value;
 
+      if (!senhaForteVisual(senha)) {
+        mensagemSenhaInvalida();
+        return;
+      }
+
       if (senha !== confirmacao) {
         mensagem(
           "As senhas não conferem.",
@@ -1398,6 +1405,27 @@
         true
       );
     }
+  }
+
+
+  function senhaForteVisual(senha) {
+    const valor =
+      String(senha || "");
+
+    return (
+      valor.length >= 8 &&
+      /[a-z]/.test(valor) &&
+      /[A-Z]/.test(valor) &&
+      /\d/.test(valor) &&
+      /[^A-Za-z0-9\s]/.test(valor)
+    );
+  }
+
+  function mensagemSenhaInvalida() {
+    mensagem(
+      "A senha deve ter no mínimo 8 caracteres, com letra maiúscula, letra minúscula, número e caractere especial.",
+      true
+    );
   }
 
   function garantirDialogSenha() {
@@ -1455,6 +1483,7 @@
             <input
               id="ceoNovaSenha"
               type="password"
+              minlength="8"
               autocomplete="new-password"
               required
             >
@@ -1466,6 +1495,7 @@
             <input
               id="ceoNovaSenha2"
               type="password"
+              minlength="8"
               autocomplete="new-password"
               required
             >
@@ -1575,6 +1605,11 @@
       document.getElementById(
         "ceoNovaSenha2"
       ).value;
+
+    if (!senhaForteVisual(senha)) {
+      mensagemSenhaInvalida();
+      return;
+    }
 
     if (senha !== confirmacao) {
       mensagem(

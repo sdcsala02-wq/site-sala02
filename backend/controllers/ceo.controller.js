@@ -163,10 +163,11 @@ function senhaForte(senha) {
   const valor = String(senha || "");
 
   return (
-    valor.length >= 10 &&
+    valor.length >= 8 &&
     /[a-z]/.test(valor) &&
     /[A-Z]/.test(valor) &&
-    /\d/.test(valor)
+    /\d/.test(valor) &&
+    /[^A-Za-z0-9\s]/.test(valor)
   );
 }
 
@@ -402,7 +403,7 @@ async function criarUsuario(req, res) {
   if (!senhaForte(senha)) {
     return res.status(400).json({
       erro:
-        "A senha deve ter ao menos 10 caracteres, letra maiúscula, letra minúscula e número."
+        "A senha deve ter ao menos 8 caracteres, letra maiúscula, letra minúscula, número e caractere especial."
     });
   }
 
@@ -824,7 +825,7 @@ async function redefinirSenha(req, res) {
   if (!senhaForte(senha)) {
     return res.status(400).json({
       erro:
-        "A senha deve ter ao menos 10 caracteres, letra maiúscula, letra minúscula e número."
+        "A senha deve ter ao menos 8 caracteres, letra maiúscula, letra minúscula, número e caractere especial."
     });
   }
 

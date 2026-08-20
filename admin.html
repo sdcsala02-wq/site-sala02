@@ -1340,13 +1340,13 @@ body {
 
           <div class="topbar-user">
 
-            <div class="topbar-avatar">
+            <div class="topbar-avatar" id="topbarUsuarioAvatar">
               S2
             </div>
 
             <div class="topbar-user-info">
-              <strong>Administrador</strong>
-              <span>CEO / Gest&atilde;o</span>
+              <strong id="topbarUsuarioNome">Administrador</strong>
+              <span id="topbarUsuarioPerfil">CEO / Gest&atilde;o</span>
             </div>
 
             <span
@@ -1733,6 +1733,74 @@ body {
 
       return resultado;
     }
+    function atualizarCabecalhoUsuario(dadosUsuario) {
+      const usuario =
+        dadosUsuario && dadosUsuario.usuario
+          ? dadosUsuario.usuario
+          : dadosUsuario || {};
+
+      const nome =
+        String(
+          usuario.nome || "Administrador"
+        ).trim();
+
+      const perfil =
+        String(
+          usuario.perfil || "CEO"
+        ).toUpperCase();
+
+      const partes =
+        nome
+          .split(/\s+/)
+          .filter(Boolean);
+
+      let iniciais = "S2";
+
+      if (partes.length === 1) {
+        iniciais =
+          partes[0]
+            .substring(0, 2)
+            .toUpperCase();
+      }
+      else if (partes.length >= 2) {
+        iniciais =
+          (
+            partes[0][0] +
+            partes[partes.length - 1][0]
+          ).toUpperCase();
+      }
+
+      const nomeElemento =
+        document.getElementById(
+          "topbarUsuarioNome"
+        );
+
+      const perfilElemento =
+        document.getElementById(
+          "topbarUsuarioPerfil"
+        );
+
+      const avatarElemento =
+        document.getElementById(
+          "topbarUsuarioAvatar"
+        );
+
+      if (nomeElemento) {
+        nomeElemento.textContent = nome;
+      }
+
+      if (perfilElemento) {
+        perfilElemento.textContent =
+          perfil === "CEO"
+            ? "CEO / Gestão"
+            : perfil;
+      }
+
+      if (avatarElemento) {
+        avatarElemento.textContent =
+          iniciais || "S2";
+      }
+    }
     async function entrarCEO() {
       const documento =
         document
@@ -1801,6 +1869,10 @@ body {
         document.getElementById(
           "ceoSenha"
         ).value = "";
+
+        atualizarCabecalhoUsuario(
+          dados.usuario
+        );
 
         abrirPainel();
 
@@ -2524,6 +2596,10 @@ body {
 
           return;
         }
+
+        atualizarCabecalhoUsuario(
+          dados
+        );
 
         abrirPainel();
 

@@ -1185,6 +1185,7 @@ body {
 /* FIM-TEMA-EXECUTIVO-SALA02-V2 */
 
 </style>
+  <link rel="stylesheet" href="css/admin-sala02-v3.css">
 </head>
 
 <body>
@@ -1220,27 +1221,141 @@ body {
   </section>
 
   <section class="dashboard" id="dashboard">
-    <div class="layout">
+    <div class="layout sala02-shell">
 
-      <aside>
-        <h1>SALA <span>02</span></h1>
-        <p>Painel CEO / Gestão Operacional</p>
+      <aside class="sala02-sidebar">
 
-        <div class="menu">
-          <button class="active" onclick="abrirPagina('dashboardPage', this)">📊 Dashboard</button>
-          <button onclick="abrirPagina('clientesPage', this)">👥 Clientes</button>
-          <button onclick="abrirPagina('novoProcessoPage', this)">📄 Novo Processo</button>
-          <button onclick="abrirPagina('processosPage', this)">🔎 Processos</button>
-          <button onclick="sairCEO()">🚪 Sair</button>
+        <div class="sala02-brand">
+          <div class="sala02-brand-mark">S2</div>
+
+          <div class="sala02-brand-text">
+            <strong>SALA 02</strong>
+            <span>Gest&atilde;o Empresarial</span>
+          </div>
         </div>
+
+        <div class="sidebar-context">
+          PAINEL EXECUTIVO
+        </div>
+
+        <nav class="menu">
+
+          <div class="menu-group-title">
+            VIS&Atilde;O GERAL
+          </div>
+
+          <button
+            type="button"
+            class="active"
+            data-page="dashboardPage"
+            onclick="abrirPagina('dashboardPage', this)"
+          >
+            <span class="nav-symbol"></span>
+            <span>Dashboard</span>
+          </button>
+
+          <div class="menu-group-title">
+            GEST&Atilde;O
+          </div>
+
+          <button
+            type="button"
+            data-page="clientesPage"
+            onclick="abrirPagina('clientesPage', this)"
+          >
+            <span class="nav-symbol"></span>
+            <span>Clientes</span>
+          </button>
+
+          <button
+            type="button"
+            data-page="novoProcessoPage"
+            onclick="abrirPagina('novoProcessoPage', this)"
+          >
+            <span class="nav-symbol"></span>
+            <span>Novo Processo</span>
+          </button>
+
+          <button
+            type="button"
+            data-page="processosPage"
+            onclick="abrirPagina('processosPage', this)"
+          >
+            <span class="nav-symbol"></span>
+            <span>Processos</span>
+          </button>
+
+          <div class="menu-group-title">
+            ADMINISTRA&Ccedil;&Atilde;O
+          </div>
+
+          <button
+            type="button"
+            onclick="location.href='central-ceo.html'"
+          >
+            <span class="nav-symbol"></span>
+            <span>Central CEO</span>
+          </button>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+          <div class="sidebar-status">
+            <span class="status-dot"></span>
+
+            <div>
+              <strong>Sistema online</strong>
+              <small>Ambiente seguro</small>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="sidebar-logout"
+            onclick="sairCEO()"
+          >
+            Sair do sistema
+          </button>
+
+        </div>
+
       </aside>
 
       <main>
+
         <div class="topbar">
-          <div>
-            <h2>Painel CEO</h2>
-            <p>Gestão de clientes, processos e movimentações.</p>
+
+          <div class="topbar-heading">
+            <span class="topbar-kicker">
+              SDC SALA 02
+            </span>
+
+            <h2>Painel Executivo</h2>
+
+            <p>
+              Gest&atilde;o de clientes, processos e opera&ccedil;&otilde;es.
+            </p>
           </div>
+
+          <div class="topbar-user">
+
+            <div class="topbar-avatar">
+              S2
+            </div>
+
+            <div class="topbar-user-info">
+              <strong>Administrador</strong>
+              <span>CEO / Gest&atilde;o</span>
+            </div>
+
+            <span
+              class="topbar-online"
+              title="Sistema online"
+            ></span>
+
+          </div>
+
         </div>
 
         <section id="dashboardPage" class="page active">
@@ -1261,7 +1376,47 @@ body {
             </div>
           </div>
 
-          <div class="panel">
+                    <div class="executive-hero">
+
+            <div class="executive-hero-copy">
+
+              <span class="executive-label">
+                AMBIENTE EXECUTIVO
+              </span>
+
+              <h3>
+                Bem-vindo ao Sala 02
+              </h3>
+
+              <p>
+                Acompanhe clientes, processos e movimenta&ccedil;&otilde;es
+                em um &uacute;nico ambiente de gest&atilde;o.
+              </p>
+
+            </div>
+
+            <div class="executive-hero-actions">
+
+              <button
+                type="button"
+                class="hero-primary"
+                onclick="document.querySelector('[data-page=&quot;novoProcessoPage&quot;]').click()"
+              >
+                Novo processo
+              </button>
+
+              <button
+                type="button"
+                class="hero-secondary"
+                onclick="document.querySelector('[data-page=&quot;clientesPage&quot;]').click()"
+              >
+                Ver clientes
+              </button>
+
+            </div>
+
+          </div>
+<div class="panel">
             <h3>Resumo Operacional</h3>
             <p>Use o menu lateral para cadastrar clientes, criar processos e consultar movimentações.</p>
           </div>

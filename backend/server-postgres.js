@@ -9,6 +9,7 @@ const pool = require("./config/database");
 const authRoutes = require("./routes/auth.routes");
 const publicRoutes = require("./routes/public.routes");
 const portalRoutes = require("./routes/portal.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 const app = express();
 
@@ -105,6 +106,11 @@ app.use(
 app.use(
   "/api/portal",
   portalRoutes
+);
+
+app.use(
+  "/api/admin",
+  adminRoutes
 );
 
 app.get("/", async (req, res) => {

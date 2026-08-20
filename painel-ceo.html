@@ -1,0 +1,349 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Executivo | Sala 02</title>
+
+  <link rel="stylesheet" href="css/painel-ceo-v2.css">
+</head>
+
+<body>
+
+  <aside class="sidebar">
+
+    <div class="brand">
+      <div class="brand-logo">S2</div>
+
+      <div>
+        <strong>SALA 02</strong>
+        <span>Gestão Empresarial</span>
+      </div>
+    </div>
+
+    <nav>
+
+      <div class="nav-section">
+        <span class="nav-title">VISÃO GERAL</span>
+
+        <a href="painel-ceo.html" class="nav-item active">
+          <span>▦</span>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-title">GESTÃO</span>
+
+        <a href="admin.html" class="nav-item">
+          <span>♟</span>
+          Clientes
+        </a>
+
+        <a href="admin.html" class="nav-item">
+          <span>▤</span>
+          Empresas
+        </a>
+
+        <a href="admin.html" class="nav-item">
+          <span>▣</span>
+          Processos
+        </a>
+
+        <a href="admin.html" class="nav-item">
+          <span>!</span>
+          Pendências
+        </a>
+
+        <a href="admin.html" class="nav-item">
+          <span>□</span>
+          Documentos
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-title">ADMINISTRAÇÃO</span>
+
+        <a href="central-ceo.html" class="nav-item">
+          <span>U</span>
+          Central CEO
+        </a>
+
+        <a href="admin.html" class="nav-item">
+          <span>◎</span>
+          Auditoria
+        </a>
+      </div>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+      <div class="status-box">
+        <span class="status-dot"></span>
+
+        <div>
+          <strong>Sistema online</strong>
+          <small>Banco conectado</small>
+        </div>
+      </div>
+
+      <small>Versão 2.0</small>
+
+    </div>
+
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div>
+        <span class="eyebrow">SISTEMA SALA 02</span>
+        <h1>Dashboard Executivo</h1>
+        <p>Visão geral de clientes, processos e operações.</p>
+      </div>
+
+      <div class="user-box">
+
+        <div class="avatar">CEO</div>
+
+        <div>
+          <strong id="usuarioNome">CEO Sala 02</strong>
+          <span id="usuarioPerfil">CEO</span>
+        </div>
+
+      </div>
+
+    </header>
+
+    <section class="content">
+
+      <section class="hero">
+
+        <div>
+
+          <span class="hero-tag">
+            AMBIENTE EXECUTIVO
+          </span>
+
+          <h2 id="boasVindas">
+            Bem-vindo ao Sala 02
+          </h2>
+
+          <p>
+            Acompanhe clientes, processos, documentos,
+            pendências e movimentações em um único ambiente.
+          </p>
+
+          <div class="hero-actions">
+
+            <a href="admin.html" class="btn btn-light">
+              + Novo processo
+            </a>
+
+            <a href="central-ceo.html" class="btn btn-outline">
+              Gestão de usuários
+            </a>
+
+          </div>
+
+        </div>
+
+        <div class="hero-seal">
+          <span>SALA 02</span>
+          <strong>Gestão<br>Integrada</strong>
+        </div>
+
+      </section>
+
+      <section class="cards">
+
+        <article class="card">
+
+          <div class="card-top">
+            <span class="card-icon">♟</span>
+            <span class="tag">BASE ATUAL</span>
+          </div>
+
+          <span class="card-label">Total de Clientes</span>
+
+          <strong class="card-number" id="totalClientes">
+            -
+          </strong>
+
+          <p>Clientes cadastrados no sistema.</p>
+
+          <div class="card-footer">
+            <span>Gestão cadastral</span>
+            <a href="admin.html">Ver detalhes</a>
+          </div>
+
+        </article>
+
+        <article class="card">
+
+          <div class="card-top">
+            <span class="card-icon">▣</span>
+            <span class="tag">OPERAÇÃO</span>
+          </div>
+
+          <span class="card-label">Processos</span>
+
+          <strong class="card-number" id="totalProcessos">
+            -
+          </strong>
+
+          <p>Processos vinculados aos clientes.</p>
+
+          <div class="card-footer">
+            <span>Controle operacional</span>
+            <a href="admin.html">Ver detalhes</a>
+          </div>
+
+        </article>
+
+        <article class="card">
+
+          <div class="card-top">
+            <span class="card-icon success">✓</span>
+            <span class="tag tag-success">MONITORAMENTO</span>
+          </div>
+
+          <span class="card-label">Sistema</span>
+
+          <strong class="card-number">
+            Ativo
+          </strong>
+
+          <p>Ambiente protegido e conectado.</p>
+
+          <div class="card-footer">
+            <span>Infraestrutura</span>
+            <span>Online</span>
+          </div>
+
+        </article>
+
+        <article class="card">
+
+          <div class="card-top">
+            <span class="card-icon warning">!</span>
+            <span class="tag tag-warning">ATENÇÃO</span>
+          </div>
+
+          <span class="card-label">Pendências</span>
+
+          <strong class="card-number" id="totalPendencias">
+            -
+          </strong>
+
+          <p>Pendências documentais e operacionais.</p>
+
+          <div class="card-footer">
+            <span>Controle de prazos</span>
+            <a href="admin.html">Ver detalhes</a>
+          </div>
+
+        </article>
+
+      </section>
+
+      <section class="dashboard-grid">
+
+        <article class="panel">
+
+          <span class="eyebrow">
+            EVOLUÇÃO OPERACIONAL
+          </span>
+
+          <h3>Visão geral do sistema</h3>
+
+          <p class="panel-subtitle">
+            Estrutura preparada para indicadores,
+            movimentações e acompanhamento executivo.
+          </p>
+
+          <div class="chart-placeholder">
+
+            <div class="bars">
+
+              <span style="height:20%"></span>
+              <span style="height:34%"></span>
+              <span style="height:27%"></span>
+              <span style="height:48%"></span>
+              <span style="height:40%"></span>
+              <span style="height:58%"></span>
+              <span style="height:70%"></span>
+              <span style="height:92%"></span>
+              <span style="height:62%"></span>
+              <span style="height:75%"></span>
+              <span style="height:68%"></span>
+              <span style="height:86%"></span>
+
+            </div>
+
+          </div>
+
+        </article>
+
+        <article class="panel">
+
+          <span class="eyebrow">
+            ACESSO RÁPIDO
+          </span>
+
+          <h3>Principais ações</h3>
+
+          <p class="panel-subtitle">
+            Atalhos para as rotinas mais utilizadas.
+          </p>
+
+          <div class="actions-grid">
+
+            <a href="admin.html" class="action-card">
+              <span>+</span>
+              <div>
+                <strong>Novo processo</strong>
+                <small>Criar atendimento</small>
+              </div>
+            </a>
+
+            <a href="admin.html" class="action-card">
+              <span>⌕</span>
+              <div>
+                <strong>Pesquisar cliente</strong>
+                <small>Consulta rápida</small>
+              </div>
+            </a>
+
+            <a href="central-ceo.html" class="action-card">
+              <span>U</span>
+              <div>
+                <strong>Central CEO</strong>
+                <small>Usuários e acessos</small>
+              </div>
+            </a>
+
+            <a href="admin.html" class="action-card">
+              <span>▣</span>
+              <div>
+                <strong>Processos</strong>
+                <small>Gestão operacional</small>
+              </div>
+            </a>
+
+          </div>
+
+        </article>
+
+      </section>
+
+    </section>
+
+  </main>
+
+  <script src="js/painel-ceo-v2.js"></script>
+
+</body>
+</html>

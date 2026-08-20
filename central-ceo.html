@@ -1,0 +1,248 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Central CEO | Sala 02</title>
+
+  <link rel="stylesheet" href="css/painel-ceo-v2.css">
+</head>
+
+<body>
+
+  <aside class="sidebar">
+
+    <div class="brand">
+      <div class="brand-logo">S2</div>
+
+      <div>
+        <strong>SALA 02</strong>
+        <span>Gestão Empresarial</span>
+      </div>
+    </div>
+
+    <nav>
+
+      <div class="nav-section">
+
+        <span class="nav-title">VISÃO GERAL</span>
+
+        <a href="painel-ceo.html" class="nav-item">
+          <span>▦</span>
+          Dashboard
+        </a>
+
+      </div>
+
+      <div class="nav-section">
+
+        <span class="nav-title">GESTÃO</span>
+
+        <a href="admin.html" class="nav-item">
+          <span>♟</span>
+          Clientes
+        </a>
+
+        <a href="admin.html" class="nav-item">
+          <span>▣</span>
+          Processos
+        </a>
+
+      </div>
+
+      <div class="nav-section">
+
+        <span class="nav-title">ADMINISTRAÇÃO</span>
+
+        <a href="central-ceo.html" class="nav-item active">
+          <span>U</span>
+          Central CEO
+        </a>
+
+      </div>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+      <div class="status-box">
+        <span class="status-dot"></span>
+
+        <div>
+          <strong>Sistema online</strong>
+          <small>Banco conectado</small>
+        </div>
+      </div>
+
+      <small>Versão 2.0</small>
+
+    </div>
+
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div>
+        <span class="eyebrow">
+          ADMINISTRAÇÃO DO SISTEMA
+        </span>
+
+        <h1>Central CEO</h1>
+
+        <p>
+          Gerencie usuários, acessos e permissões.
+        </p>
+      </div>
+
+      <div class="user-box">
+
+        <div class="avatar">
+          CEO
+        </div>
+
+        <div>
+          <strong id="usuarioNome">
+            CEO Sala 02
+          </strong>
+
+          <span id="usuarioPerfil">
+            CEO
+          </span>
+        </div>
+
+      </div>
+
+    </header>
+
+    <section class="content">
+
+      <section class="cards cards-admin">
+
+        <article class="card compact">
+          <span class="card-label">
+            Total de usuários
+          </span>
+
+          <strong class="card-number" id="usuariosTotal">
+            -
+          </strong>
+        </article>
+
+        <article class="card compact">
+          <span class="card-label">
+            Usuários ativos
+          </span>
+
+          <strong class="card-number" id="usuariosAtivos">
+            -
+          </strong>
+        </article>
+
+        <article class="card compact">
+          <span class="card-label">
+            Clientes
+          </span>
+
+          <strong class="card-number" id="usuariosClientes">
+            -
+          </strong>
+        </article>
+
+        <article class="card compact">
+          <span class="card-label">
+            Usuários inativos
+          </span>
+
+          <strong class="card-number" id="usuariosInativos">
+            -
+          </strong>
+        </article>
+
+      </section>
+
+      <section class="panel">
+
+        <div class="panel-heading">
+
+          <div>
+            <span class="eyebrow">
+              CONTROLE DE ACESSO
+            </span>
+
+            <h3>Usuários cadastrados</h3>
+
+            <p class="panel-subtitle">
+              Gerencie contas, perfis e acessos.
+            </p>
+          </div>
+
+          <button class="btn btn-primary" id="btnNovoUsuario">
+            + Novo usuário
+          </button>
+
+        </div>
+
+        <div class="filters">
+
+          <input
+            type="search"
+            id="buscaUsuario"
+            placeholder="Buscar por nome, e-mail, CPF ou perfil..."
+          >
+
+          <select id="filtroStatus">
+            <option value="">Todos os status</option>
+            <option value="ATIVO">Ativos</option>
+            <option value="INATIVO">Inativos</option>
+          </select>
+
+          <select id="filtroPerfil">
+            <option value="">Todos os perfis</option>
+            <option value="CEO">CEO</option>
+            <option value="CLIENTE">Cliente</option>
+          </select>
+
+        </div>
+
+        <div class="table-wrap">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>E-mail</th>
+                <th>Perfil</th>
+                <th>Status</th>
+                <th>Último acesso</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody id="usuariosTabela">
+
+              <tr>
+                <td colspan="6" class="empty">
+                  Carregando usuários...
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+  <script src="js/central-ceo-v2.js"></script>
+
+</body>
+</html>

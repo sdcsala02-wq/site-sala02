@@ -465,6 +465,725 @@
       }
     }
 
+
+/* TEMA-EXECUTIVO-SALA02-V2 */
+
+/* =========================================================
+   PALETA
+   ========================================================= */
+
+:root {
+  --exec-bg: #f2f5f9;
+  --exec-surface: #ffffff;
+  --exec-surface-soft: #f8fafc;
+
+  --exec-sidebar: #111827;
+  --exec-sidebar-2: #172033;
+
+  --exec-navy: #0b2848;
+  --exec-blue: #174d7c;
+
+  --exec-gold: #d6a857;
+  --exec-gold-soft: #fff5df;
+
+  --exec-text: #172033;
+  --exec-muted: #718096;
+
+  --exec-border: #dde4ec;
+
+  --exec-green: #198754;
+  --exec-green-soft: #e8f6ee;
+
+  --exec-red: #c0392b;
+  --exec-red-soft: #fdecea;
+
+  --exec-orange: #b86b00;
+  --exec-orange-soft: #fff3dc;
+
+  --exec-shadow:
+    0 10px 35px rgba(22, 34, 51, 0.07);
+
+  --exec-shadow-hover:
+    0 16px 38px rgba(22, 34, 51, 0.12);
+}
+
+
+/* =========================================================
+   BASE
+   ========================================================= */
+
+body {
+  margin: 0 !important;
+  background: var(--exec-bg) !important;
+  color: var(--exec-text) !important;
+}
+
+#dashboard {
+  min-height: 100vh !important;
+  background: var(--exec-bg) !important;
+  color: var(--exec-text) !important;
+}
+
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+#dashboard .layout {
+  display: grid !important;
+  grid-template-columns: 255px minmax(0, 1fr) !important;
+
+  min-height: 100vh !important;
+
+  background: var(--exec-bg) !important;
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+#dashboard aside {
+  position: sticky !important;
+  top: 0 !important;
+
+  height: 100vh !important;
+
+  padding: 30px 20px !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      #0f1724 0%,
+      #111c2e 58%,
+      #10233a 100%
+    ) !important;
+
+  border: 0 !important;
+  border-right: 1px solid rgba(255,255,255,.05) !important;
+
+  box-shadow:
+    8px 0 30px rgba(0,0,0,.08) !important;
+}
+
+#dashboard aside h1 {
+  margin: 0 0 4px 0 !important;
+
+  color: #ffffff !important;
+
+  font-size: 27px !important;
+  font-weight: 800 !important;
+
+  letter-spacing: -0.8px !important;
+}
+
+#dashboard aside h1 span {
+  color: var(--exec-gold) !important;
+}
+
+#dashboard aside > p {
+  margin: 0 0 34px 0 !important;
+
+  color: #8fa0b5 !important;
+
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+
+/* =========================================================
+   MENU
+   ========================================================= */
+
+#dashboard .menu {
+  display: flex !important;
+  flex-direction: column !important;
+
+  gap: 6px !important;
+}
+
+#dashboard .menu button {
+  position: relative !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  width: 100% !important;
+  min-height: 48px !important;
+
+  margin: 0 !important;
+  padding: 0 16px !important;
+
+  border: 0 !important;
+  border-radius: 10px !important;
+
+  background: transparent !important;
+
+  color: #b8c3d1 !important;
+
+  font-size: 13px !important;
+  font-weight: 650 !important;
+
+  text-align: left !important;
+
+  box-shadow: none !important;
+
+  transition:
+    background .18s ease,
+    color .18s ease,
+    transform .18s ease !important;
+}
+
+#dashboard .menu button:hover {
+  background: rgba(255,255,255,.06) !important;
+
+  color: #ffffff !important;
+
+  transform: translateX(2px) !important;
+}
+
+#dashboard .menu button.active {
+  background: rgba(214,168,87,.14) !important;
+
+  color: #ffffff !important;
+
+  box-shadow:
+    inset 3px 0 0 var(--exec-gold) !important;
+}
+
+#dashboard .menu button.active::after {
+  content: "";
+
+  position: absolute;
+
+  right: 14px;
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: var(--exec-gold);
+}
+
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+#dashboard main {
+  width: 100% !important;
+
+  padding: 30px 36px 48px !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f7f9fc 0%,
+      #f2f5f9 100%
+    ) !important;
+
+  color: var(--exec-text) !important;
+}
+
+
+/* =========================================================
+   TOPBAR
+   ========================================================= */
+
+#dashboard .topbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  min-height: 92px !important;
+
+  margin-bottom: 24px !important;
+
+  padding: 20px 24px !important;
+
+  background: #ffffff !important;
+
+  border: 1px solid var(--exec-border) !important;
+  border-radius: 18px !important;
+
+  box-shadow: var(--exec-shadow) !important;
+}
+
+#dashboard .topbar h2 {
+  margin: 0 0 5px 0 !important;
+
+  color: var(--exec-text) !important;
+
+  font-size: 28px !important;
+  font-weight: 780 !important;
+
+  letter-spacing: -0.8px !important;
+}
+
+#dashboard .topbar p {
+  margin: 0 !important;
+
+  color: var(--exec-muted) !important;
+
+  font-size: 13px !important;
+}
+
+
+/* =========================================================
+   PAGINAS
+   ========================================================= */
+
+#dashboard .page {
+  animation: executivoEntrada .20s ease !important;
+}
+
+@keyframes executivoEntrada {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =========================================================
+   DASHBOARD - CARDS DO TOPO
+   ========================================================= */
+
+#dashboardPage > div:first-child {
+  display: grid !important;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr)) !important;
+
+  gap: 18px !important;
+
+  margin-bottom: 22px !important;
+}
+
+#dashboardPage > div:first-child > div {
+  position: relative !important;
+
+  min-height: 125px !important;
+
+  padding: 22px !important;
+
+  overflow: hidden !important;
+
+  background: #ffffff !important;
+
+  border: 1px solid var(--exec-border) !important;
+  border-radius: 17px !important;
+
+  box-shadow: var(--exec-shadow) !important;
+}
+
+#dashboardPage > div:first-child > div::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 4px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--exec-gold),
+      #efd092
+    );
+}
+
+#dashboardPage > div:first-child > div::after {
+  content: "";
+
+  position: absolute;
+
+  right: -30px;
+  bottom: -40px;
+
+  width: 110px;
+  height: 110px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(214,168,87,.08);
+}
+
+#dashboardPage > div:first-child > div * {
+  position: relative;
+  z-index: 2;
+}
+
+#dashboardPage > div:first-child > div > *:first-child {
+  color: var(--exec-muted) !important;
+
+  font-size: 11px !important;
+  font-weight: 800 !important;
+
+  letter-spacing: .7px !important;
+
+  text-transform: uppercase !important;
+}
+
+#totalClientes,
+#totalProcessos {
+  display: block !important;
+
+  margin-top: 8px !important;
+
+  color: var(--exec-text) !important;
+
+  font-size: 35px !important;
+  font-weight: 800 !important;
+
+  line-height: 1 !important;
+}
+
+
+/* =========================================================
+   PAINEIS
+   ========================================================= */
+
+#dashboard .panel {
+  padding: 24px !important;
+
+  background: #ffffff !important;
+
+  border: 1px solid var(--exec-border) !important;
+  border-radius: 17px !important;
+
+  box-shadow: var(--exec-shadow) !important;
+}
+
+#dashboard .panel h3 {
+  margin: 0 0 18px 0 !important;
+
+  color: var(--exec-text) !important;
+
+  font-size: 19px !important;
+  font-weight: 750 !important;
+
+  letter-spacing: -.35px !important;
+}
+
+
+/* =========================================================
+   DUAS COLUNAS
+   ========================================================= */
+
+#dashboard .two-cols {
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, .9fr)
+    minmax(0, 1.35fr) !important;
+
+  gap: 20px !important;
+}
+
+
+/* =========================================================
+   CLIENTES
+   ========================================================= */
+
+#dashboard .cliente-card,
+#dashboard .processo-card {
+  position: relative !important;
+
+  margin-bottom: 10px !important;
+  padding: 18px 20px !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #fbfcfe
+    ) !important;
+
+  border: 1px solid var(--exec-border) !important;
+  border-left: 4px solid var(--exec-gold) !important;
+
+  border-radius: 13px !important;
+
+  box-shadow:
+    0 4px 14px rgba(22,34,51,.045) !important;
+
+  transition:
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease !important;
+}
+
+#dashboard .cliente-card:hover,
+#dashboard .processo-card:hover {
+  transform: translateY(-2px) !important;
+
+  box-shadow: var(--exec-shadow-hover) !important;
+}
+
+#dashboard .cliente-card strong,
+#dashboard .processo-card strong {
+  display: block !important;
+
+  margin-bottom: 5px !important;
+
+  color: var(--exec-text) !important;
+
+  font-size: 16px !important;
+  font-weight: 760 !important;
+}
+
+#dashboard .cliente-card small,
+#dashboard .processo-card small {
+  color: var(--exec-muted) !important;
+
+  font-size: 12px !important;
+
+  line-height: 1.65 !important;
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+#dashboard .status {
+  display: inline-flex !important;
+  align-items: center !important;
+
+  min-height: 26px !important;
+
+  margin: 8px 0 !important;
+
+  padding: 4px 9px !important;
+
+  background: var(--exec-orange-soft) !important;
+
+  border: 1px solid #efdcb8 !important;
+  border-radius: 999px !important;
+
+  color: var(--exec-orange) !important;
+
+  font-size: 10px !important;
+  font-weight: 800 !important;
+
+  letter-spacing: .4px !important;
+}
+
+
+/* =========================================================
+   FORMULARIOS
+   ========================================================= */
+
+#dashboard input,
+#dashboard select,
+#dashboard textarea {
+  width: 100% !important;
+
+  min-height: 45px !important;
+
+  margin-bottom: 12px !important;
+  padding: 0 14px !important;
+
+  background: #f9fbfd !important;
+
+  border: 1px solid #d8e0e9 !important;
+  border-radius: 10px !important;
+
+  color: var(--exec-text) !important;
+
+  font-family: inherit !important;
+  font-size: 13px !important;
+
+  outline: none !important;
+
+  box-shadow: none !important;
+
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease !important;
+}
+
+#dashboard textarea {
+  min-height: 110px !important;
+
+  padding-top: 12px !important;
+}
+
+#dashboard input:focus,
+#dashboard select:focus,
+#dashboard textarea:focus {
+  background: #ffffff !important;
+
+  border-color: var(--exec-gold) !important;
+
+  box-shadow:
+    0 0 0 4px rgba(214,168,87,.12) !important;
+}
+
+
+/* =========================================================
+   BOTOES
+   ========================================================= */
+
+#dashboard main button {
+  min-height: 40px !important;
+
+  padding: 0 16px !important;
+
+  background: var(--exec-navy) !important;
+
+  border: 0 !important;
+  border-radius: 9px !important;
+
+  color: #ffffff !important;
+
+  font-size: 12px !important;
+  font-weight: 720 !important;
+
+  box-shadow:
+    0 4px 12px rgba(11,40,72,.12) !important;
+
+  cursor: pointer !important;
+
+  transition:
+    transform .16s ease,
+    background .16s ease,
+    box-shadow .16s ease !important;
+}
+
+#dashboard main button:hover {
+  background: #123b63 !important;
+
+  transform: translateY(-1px) !important;
+
+  box-shadow:
+    0 8px 18px rgba(11,40,72,.18) !important;
+}
+
+#dashboard .actions {
+  display: flex !important;
+
+  gap: 8px !important;
+
+  margin-top: 13px !important;
+
+  flex-wrap: wrap !important;
+}
+
+#dashboard .actions button {
+  min-height: 36px !important;
+
+  background: var(--exec-gold-soft) !important;
+
+  border: 1px solid #ead5aa !important;
+
+  color: #7a5517 !important;
+
+  box-shadow: none !important;
+}
+
+#dashboard .actions button:hover {
+  background: #f8e6c1 !important;
+
+  border-color: var(--exec-gold) !important;
+}
+
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+#dashboard .empty {
+  padding: 24px !important;
+
+  background: var(--exec-surface-soft) !important;
+
+  border: 1px dashed #cad5e2 !important;
+  border-radius: 12px !important;
+
+  color: var(--exec-muted) !important;
+
+  text-align: center !important;
+
+  font-size: 13px !important;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  #dashboard .layout {
+    grid-template-columns:
+      210px minmax(0,1fr) !important;
+  }
+
+  #dashboard main {
+    padding:
+      22px 18px 36px !important;
+  }
+
+  #dashboardPage > div:first-child {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  #dashboard .two-cols {
+    grid-template-columns:
+      1fr !important;
+  }
+}
+
+@media (max-width: 680px) {
+
+  #dashboard .layout {
+    display: block !important;
+  }
+
+  #dashboard aside {
+    position: relative !important;
+
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  #dashboard .menu {
+    display: grid !important;
+
+    grid-template-columns:
+      repeat(2,1fr) !important;
+  }
+}
+
+
+#dashboard .actions .btn-aprovar-cliente {
+  background: #e8f6ee !important;
+  border: 1px solid #b8dfc7 !important;
+  color: #177245 !important;
+  font-weight: 800 !important;
+}
+
+#dashboard .actions .btn-aprovar-cliente:hover {
+  background: #d7f0e1 !important;
+  border-color: #177245 !important;
+}
+
+/* FIM-TEMA-EXECUTIVO-SALA02-V2 */
+
 </style>
 </head>
 
@@ -1108,6 +1827,13 @@
                   </small>
 
                   <div class="actions">
+
+                    <button
+                      class="btn-aprovar-cliente"
+                      onclick="ativarCliente(${c.id})"
+                    >
+                      ✓ Aprovar / ativar conta
+                    </button>
 
                     <button
                       onclick="selecionarCliente(${c.id})"

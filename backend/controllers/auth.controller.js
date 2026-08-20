@@ -13,6 +13,11 @@ const AUDIENCIA_JWT = "sala02-portal";
 const DURACAO_TOKEN_MS =
   8 * 60 * 60 * 1000;
 
+
+// SEGURANCA_LOGIN_CONTA_V1
+const MAX_TENTATIVAS_LOGIN = 5;
+const DURACAO_BLOQUEIO_LOGIN_MINUTOS = 15;
+
 function ambienteProducao() {
   return (
     process.env.NODE_ENV === "production" ||
@@ -347,34 +352,137 @@ async function login(req, res) {
       });
     }
 
+    const segurancaLogin =
+      await pool.query(
+        "SELECT tentativas_login, ultima_tentativa_login, bloqueado_ate FROM usuarios WHERE id = $1 LIMIT 1",
+        [usuario.id]
+      );
+
+    const estadoSeguranca =
+      segurancaLogin.rows[0] || {};
+
+    if (
+      estadoSeguranca.bloqueado_ate &&
+      new Date(
+        estadoSeguranca.bloqueado_ate
+      ).getTime() > Date.now()
+    ) {
+      await registrarAuditoria({
+        usuarioId: usuario.id,
+        acao: "LOGIN_BLOQUEADO",
+        entidade: "usuarios",
+        entidadeId: usuario.id,
+        ip: req.ip,
+        userAgent:
+          req.headers["user-agent"],
+        dadosNovos: {
+          tipo_documento:
+            tipoDocumento,
+          bloqueado_ate:
+            estadoSeguranca.bloqueado_ate
+        }
+      });
+
+      return res.status(429).json({
+        erro:
+          "Conta temporariamente bloqueada. Aguarde alguns minutos e tente novamente."
+      });
+    }
+
     const senhaCorreta = await bcrypt.compare(
       senha,
       usuario.senha_hash
     );
 
     if (!senhaCorreta) {
+      const tentativa =
+        await pool.query(
+          [
+            "WITH calculo AS (",
+            "SELECT id,",
+            "CASE",
+            "WHEN ultima_tentativa_login IS NULL",
+            "OR ultima_tentativa_login <",
+            "NOW() - ($3 * INTERVAL '1 minute')",
+            "OR (bloqueado_ate IS NOT NULL",
+            "AND bloqueado_ate <= NOW())",
+            "THEN 1",
+            "ELSE tentativas_login + 1",
+            "END AS novas_tentativas",
+            "FROM usuarios",
+            "WHERE id = $1",
+            ")",
+            "UPDATE usuarios u",
+            "SET",
+            "tentativas_login = c.novas_tentativas,",
+            "ultima_tentativa_login = NOW(),",
+            "bloqueado_ate = CASE",
+            "WHEN c.novas_tentativas >= $2",
+            "THEN NOW() +",
+            "($3 * INTERVAL '1 minute')",
+            "ELSE NULL",
+            "END,",
+            "atualizado_em = NOW()",
+            "FROM calculo c",
+            "WHERE u.id = c.id",
+            "RETURNING",
+            "u.tentativas_login,",
+            "u.bloqueado_ate"
+          ].join(" "),
+          [
+            usuario.id,
+            MAX_TENTATIVAS_LOGIN,
+            DURACAO_BLOQUEIO_LOGIN_MINUTOS
+          ]
+        );
+
+      const estadoTentativa =
+        tentativa.rows[0] || {};
+
       await registrarAuditoria({
         usuarioId: usuario.id,
         acao: "LOGIN_FALHOU",
         entidade: "usuarios",
         entidadeId: usuario.id,
         ip: req.ip,
-        userAgent: req.headers["user-agent"],
+        userAgent:
+          req.headers["user-agent"],
         dadosNovos: {
-          tipo_documento: tipoDocumento,
-          motivo: "Senha incorreta"
+          tipo_documento:
+            tipoDocumento,
+          motivo:
+            "Senha incorreta",
+          tentativas_login:
+            estadoTentativa.tentativas_login,
+          bloqueado_ate:
+            estadoTentativa.bloqueado_ate
         }
       });
 
+      if (
+        estadoTentativa.bloqueado_ate
+      ) {
+        return res.status(429).json({
+          erro:
+            "Conta temporariamente bloqueada por excesso de tentativas. Aguarde 15 minutos."
+        });
+      }
+
       return res.status(401).json({
-        erro: "CPF/CNPJ ou senha invalidos."
+        erro:
+          "CPF/CNPJ ou senha invalidos."
       });
     }
 
     await pool.query(
       `
         UPDATE usuarios
-        SET ultimo_login = NOW()
+        SET
+          ultimo_login = NOW(),
+          tentativas_login = 0,
+          ultima_tentativa_login = NULL,
+          bloqueado_ate = NULL,
+          atualizado_em = NOW()
         WHERE id = $1
       `,
       [usuario.id]

@@ -780,6 +780,597 @@
     }
   }
 
+  /* SALA02-DOCUMENTOS-PRIVADOS-INICIO */
+
+  let csrfTokenPortal = null;
+
+
+  async function obterCsrfPortal(
+    forcar = false
+  ) {
+
+    if (
+      csrfTokenPortal &&
+      !forcar
+    ) {
+      return csrfTokenPortal;
+    }
+
+    const dados =
+      await requisicao(
+        "/api/auth/csrf",
+        {
+          method: "GET",
+          cache: "no-store"
+        }
+      );
+
+    if (
+      !dados ||
+      !dados.csrf_token
+    ) {
+      throw new Error(
+        "Não foi possível obter a proteção CSRF."
+      );
+    }
+
+    csrfTokenPortal =
+      dados.csrf_token;
+
+    return csrfTokenPortal;
+  }
+
+
+  function definirStatusUpload(
+    texto,
+    tipo = ""
+  ) {
+
+    const status =
+      document.getElementById(
+        "statusUploadDocumento"
+      );
+
+    if (!status) {
+      return;
+    }
+
+    status.textContent =
+      texto || "";
+
+    if (tipo) {
+      status.dataset.tipo =
+        tipo;
+    }
+    else {
+      delete status.dataset.tipo;
+    }
+  }
+
+
+  async function carregarProcessosParaUpload() {
+
+    const select =
+      document.getElementById(
+        "processoDocumento"
+      );
+
+    const botao =
+      document.getElementById(
+        "btnEnviarDocumento"
+      );
+
+    if (!select) {
+      return;
+    }
+
+    limparElemento(
+      select
+    );
+
+    const inicial =
+      document.createElement(
+        "option"
+      );
+
+    inicial.value = "";
+    inicial.textContent =
+      "Selecione um processo";
+
+    select.appendChild(
+      inicial
+    );
+
+
+    try {
+
+      const dados =
+        await requisicao(
+          "/api/portal/processos",
+          {
+            cache: "no-store"
+          }
+        );
+
+      const processos =
+        Array.isArray(
+          dados.processos
+        )
+          ? dados.processos
+          : [];
+
+
+      processos.forEach(
+        (processo) => {
+
+          const opcao =
+            document.createElement(
+              "option"
+            );
+
+          opcao.value =
+            String(
+              processo.id
+            );
+
+          const codigo =
+            processo.codigo_sdc ||
+            processo.protocolo ||
+            "Processo";
+
+          const titulo =
+            processo.titulo ||
+            processo.tipo_servico ||
+            "Sala 02";
+
+          opcao.textContent =
+            codigo +
+            " — " +
+            titulo;
+
+          select.appendChild(
+            opcao
+          );
+        }
+      );
+
+
+      if (botao) {
+        botao.disabled =
+          !processos.length;
+      }
+
+
+      if (!processos.length) {
+        definirStatusUpload(
+          "Não há processo disponível para receber documento."
+        );
+      }
+
+    } catch (erro) {
+
+      if (botao) {
+        botao.disabled = true;
+      }
+
+      definirStatusUpload(
+        erro.message ||
+        "Não foi possível carregar os processos.",
+        "erro"
+      );
+    }
+  }
+
+
+  function criarFormDataDocumento(
+    processoId,
+    categoria,
+    arquivo
+  ) {
+
+    const formulario =
+      new FormData();
+
+    formulario.append(
+      "processo_id",
+      processoId
+    );
+
+    formulario.append(
+      "categoria",
+      categoria
+    );
+
+    formulario.append(
+      "documento",
+      arquivo,
+      arquivo.name
+    );
+
+    return formulario;
+  }
+
+
+  async function executarUploadDocumento(
+    formulario,
+    csrfToken
+  ) {
+
+    const resposta =
+      await fetch(
+        API +
+        "/api/portal/documentos",
+        {
+          method: "POST",
+
+          credentials:
+            "include",
+
+          cache:
+            "no-store",
+
+          headers: {
+            "X-CSRF-Token":
+              csrfToken
+          },
+
+          body:
+            formulario
+        }
+      );
+
+
+    let dados = {};
+
+    try {
+      dados =
+        await resposta.json();
+    }
+    catch {
+      dados = {};
+    }
+
+
+    return {
+      resposta,
+      dados
+    };
+  }
+
+
+  async function enviarDocumento() {
+
+    const processo =
+      document.getElementById(
+        "processoDocumento"
+      );
+
+    const categoria =
+      document.getElementById(
+        "categoriaDocumento"
+      );
+
+    const campoArquivo =
+      document.getElementById(
+        "arquivoDocumento"
+      );
+
+    const botao =
+      document.getElementById(
+        "btnEnviarDocumento"
+      );
+
+
+    if (
+      !processo ||
+      !categoria ||
+      !campoArquivo ||
+      !botao
+    ) {
+      return;
+    }
+
+
+    const processoId =
+      processo.value;
+
+    const arquivo =
+      campoArquivo.files &&
+      campoArquivo.files[0];
+
+
+    if (!processoId) {
+
+      definirStatusUpload(
+        "Selecione o processo.",
+        "erro"
+      );
+
+      processo.focus();
+      return;
+    }
+
+
+    if (!arquivo) {
+
+      definirStatusUpload(
+        "Selecione o arquivo.",
+        "erro"
+      );
+
+      campoArquivo.focus();
+      return;
+    }
+
+
+    if (
+      arquivo.size < 1 ||
+      arquivo.size >
+        5 * 1024 * 1024
+    ) {
+
+      definirStatusUpload(
+        "O arquivo deve possuir no máximo 5 MB.",
+        "erro"
+      );
+
+      return;
+    }
+
+
+    const extensao =
+      String(
+        arquivo.name ||
+        ""
+      )
+        .toLowerCase()
+        .split(".")
+        .pop();
+
+
+    if (
+      ![
+        "pdf",
+        "jpg",
+        "jpeg",
+        "png"
+      ].includes(
+        extensao
+      )
+    ) {
+
+      definirStatusUpload(
+        "Envie somente PDF, JPG ou PNG.",
+        "erro"
+      );
+
+      return;
+    }
+
+
+    try {
+
+      botao.disabled = true;
+
+      botao.textContent =
+        "Enviando...";
+
+      definirStatusUpload(
+        "Enviando documento..."
+      );
+
+
+      let csrf =
+        await obterCsrfPortal();
+
+
+      let retorno =
+        await executarUploadDocumento(
+          criarFormDataDocumento(
+            processoId,
+            categoria.value.trim(),
+            arquivo
+          ),
+          csrf
+        );
+
+
+      const erroCsrf =
+        retorno.resposta.status ===
+          403 &&
+        String(
+          retorno.dados.erro ||
+          ""
+        )
+          .toUpperCase()
+          .includes(
+            "CSRF"
+          );
+
+
+      if (erroCsrf) {
+
+        csrfTokenPortal =
+          null;
+
+        csrf =
+          await obterCsrfPortal(
+            true
+          );
+
+
+        retorno =
+          await executarUploadDocumento(
+            criarFormDataDocumento(
+              processoId,
+              categoria.value.trim(),
+              arquivo
+            ),
+            csrf
+          );
+      }
+
+
+      if (
+        !retorno.resposta.ok
+      ) {
+        throw new Error(
+          retorno.dados.erro ||
+          "Não foi possível enviar o documento."
+        );
+      }
+
+
+      campoArquivo.value =
+        "";
+
+      categoria.value =
+        "";
+
+
+      definirStatusUpload(
+        "Documento enviado com sucesso.",
+        "sucesso"
+      );
+
+
+      await carregarDocumentos();
+
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao enviar documento:",
+        erro
+      );
+
+      definirStatusUpload(
+        erro.message ||
+        "Não foi possível enviar o documento.",
+        "erro"
+      );
+
+
+    } finally {
+
+      botao.disabled =
+        false;
+
+      botao.textContent =
+        "Enviar documento";
+    }
+  }
+
+
+  async function baixarDocumento(
+    documentoId,
+    nomeOriginal
+  ) {
+
+    try {
+
+      const resposta =
+        await fetch(
+          API +
+          "/api/portal/documentos/" +
+          documentoId +
+          "/download",
+          {
+            method: "GET",
+
+            credentials:
+              "include",
+
+            cache:
+              "no-store"
+          }
+        );
+
+
+      if (!resposta.ok) {
+
+        let dados = {};
+
+        try {
+          dados =
+            await resposta.json();
+        }
+        catch {
+          dados = {};
+        }
+
+        throw new Error(
+          dados.erro ||
+          "Não foi possível baixar o documento."
+        );
+      }
+
+
+      const blob =
+        await resposta.blob();
+
+
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      const link =
+        document.createElement(
+          "a"
+        );
+
+
+      link.href =
+        url;
+
+      link.download =
+        String(
+          nomeOriginal ||
+          "documento"
+        ).replace(
+          /[\\/:*?"<>|]/g,
+          "_"
+        );
+
+
+      document.body.appendChild(
+        link
+      );
+
+      link.click();
+
+      link.remove();
+
+
+      window.setTimeout(
+        () => {
+          URL.revokeObjectURL(
+            url
+          );
+        },
+        1000
+      );
+
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao baixar documento:",
+        erro
+      );
+
+      definirStatusUpload(
+        erro.message ||
+        "Não foi possível baixar o documento.",
+        "erro"
+      );
+    }
+  }
+
+  /* SALA02-DOCUMENTOS-PRIVADOS-FIM */
+
   async function carregarDocumentos() {
     const lista =
       document.getElementById(
@@ -822,7 +1413,8 @@
 
       documentos.forEach(
         (documento) => {
-          lista.appendChild(
+
+          const item =
             criarItemDetalhe(
               documento.nome_original,
               documento.processo_titulo ||
@@ -837,7 +1429,55 @@
               ]
                 .filter(Boolean)
                 .join(" · ")
-            )
+            );
+
+
+          const acoes =
+            document.createElement(
+              "div"
+            );
+
+          acoes.className =
+            "documento-acoes";
+
+
+          const botaoBaixar =
+            document.createElement(
+              "button"
+            );
+
+          botaoBaixar.type =
+            "button";
+
+          botaoBaixar.className =
+            "documento-baixar";
+
+          botaoBaixar.textContent =
+            "Baixar";
+
+
+          botaoBaixar.addEventListener(
+            "click",
+            () => {
+
+              baixarDocumento(
+                documento.id,
+                documento.nome_original
+              );
+            }
+          );
+
+
+          acoes.appendChild(
+            botaoBaixar
+          );
+
+          item.appendChild(
+            acoes
+          );
+
+          lista.appendChild(
+            item
           );
         }
       );
@@ -913,7 +1553,8 @@
 
     await Promise.all([
       carregarProcessos(),
-      carregarDocumentos()
+      carregarDocumentos(),
+      carregarProcessosParaUpload()
     ]);
   }
 
@@ -1153,6 +1794,19 @@
       "click",
       sair
     );
+
+    const botaoEnviarDocumento =
+      document.getElementById(
+        "btnEnviarDocumento"
+      );
+
+    if (botaoEnviarDocumento) {
+
+      botaoEnviarDocumento.addEventListener(
+        "click",
+        enviarDocumento
+      );
+    }
 
     campoDocumento.addEventListener(
       "input",

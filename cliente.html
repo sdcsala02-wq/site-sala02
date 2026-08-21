@@ -323,7 +323,114 @@
         padding: 32px 24px;
       }
     }
-  </style>
+
+/* SALA02-UPLOAD-DOCUMENTO-INICIO */
+
+.upload-documento {
+  margin: 14px 0 18px;
+  padding: 18px;
+  border: 1px solid #dbe4ee;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.upload-documento > strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #071f3d;
+  font-size: 16px;
+}
+
+.upload-documento-ajuda {
+  margin: 0 0 14px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.upload-documento-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.upload-documento label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.upload-documento select,
+.upload-documento input[type="text"],
+.upload-documento input[type="file"] {
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 9px 11px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+}
+
+.upload-documento-arquivo {
+  margin-top: 2px;
+}
+
+.upload-documento-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+#btnEnviarDocumento,
+.documento-baixar {
+  width: auto;
+  min-height: 38px;
+  border: 0;
+  border-radius: 9px;
+  padding: 0 16px;
+  background: #071f3d;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+#btnEnviarDocumento:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+#statusUploadDocumento {
+  color: #475569;
+  font-size: 12px;
+}
+
+#statusUploadDocumento[data-tipo="erro"] {
+  color: #b42318;
+}
+
+#statusUploadDocumento[data-tipo="sucesso"] {
+  color: #166534;
+}
+
+.documento-acoes {
+  margin-top: 10px;
+}
+
+/* SALA02-UPLOAD-DOCUMENTO-FIM */
+
+@media (max-width: 700px) {
+  .upload-documento-grid {
+    grid-template-columns: 1fr;
+  }
+}</style>
   <style id="loginCompactoElegante">
     #loginCard input {
       height: 40px;
@@ -352,7 +459,7 @@
       transform: translateY(-1px);
       box-shadow: 0 8px 20px rgba(7, 31, 61, 0.24);
     }
-  
+
 /* OLHO-SENHA-SALA02 */
 
 .campo-senha-sala02 {
@@ -562,6 +669,66 @@
         <div class="notice">
           Área preparada para exibir documentos anexados, documentos pendentes e exigências.
         </div>
+
+        <div
+          id="uploadDocumentoArea"
+          class="upload-documento"
+        >
+          <strong>Enviar documento</strong>
+
+          <p class="upload-documento-ajuda">
+            Formatos permitidos: PDF, JPG ou PNG. Limite de 5 MB por arquivo.
+          </p>
+
+          <div class="upload-documento-grid">
+
+            <label>
+              Processo
+              <select id="processoDocumento">
+                <option value="">
+                  Selecione um processo
+                </option>
+              </select>
+            </label>
+
+            <label>
+              Categoria
+              <input
+                id="categoriaDocumento"
+                type="text"
+                maxlength="100"
+                placeholder="Ex.: Contrato, RG, comprovante"
+              >
+            </label>
+
+          </div>
+
+          <label class="upload-documento-arquivo">
+            Arquivo
+            <input
+              id="arquivoDocumento"
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+            >
+          </label>
+
+          <div class="upload-documento-acoes">
+
+            <button
+              id="btnEnviarDocumento"
+              type="button"
+            >
+              Enviar documento
+            </button>
+
+            <small
+              id="statusUploadDocumento"
+              aria-live="polite"
+            ></small>
+
+          </div>
+
+        </div>
         <div id="listaDocumentos"></div>
       </div>
 
@@ -576,7 +743,7 @@
       </div>
 
     </div>
-  </section>  
+  </section>
 
     <script src="js/cliente.js" defer></script>
 

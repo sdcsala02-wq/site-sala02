@@ -400,10 +400,7 @@ video {
 
 .hero-container {
   width:
-    min(
-      100%,
-      var(--shell)
-    );
+    min(100%, var(--shell));
 
   margin: 0 auto;
 
@@ -1941,3 +1938,171 @@ button:focus-visible {
       1 !important;
   }
 }
+
+/* SALA02-LAYOUT-OFICIAL-INICIO */
+
+/*
+ =============================================================
+ SDC SALA 02 — LAYOUT OFICIAL DESKTOP
+
+ - Moldura externa real de 2 cm.
+ - Fundos das seções permanecem dentro da moldura.
+ - Conteúdo interno fica 2 cm afastado da borda da seção.
+ - Hero, Serviços, Como Trabalhamos, Parceiros, CTA e Footer
+   seguem o mesmo eixo visual.
+ - Mobile e tablet continuam usando o responsivo original.
+ =============================================================
+*/
+
+@media (min-width: 1100px) {
+
+  /* ---------------------------------------------------------
+     FUNDO EXTERNO / MOLDURA
+     --------------------------------------------------------- */
+
+  html,
+  body {
+    background: #e9eef4 !important;
+  }
+
+  body {
+    margin: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     SITE INTEIRO COM 2CM DE BORDA
+     --------------------------------------------------------- */
+
+  body > header,
+  body > main,
+  body > footer {
+    width: calc(100% - 4cm) !important;
+    max-width: none !important;
+
+    margin-left: 2cm !important;
+    margin-right: 2cm !important;
+
+    box-sizing: border-box !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     CONTEÚDO INTERNO
+     2CM DA BORDA DE CADA SEÇÃO
+     --------------------------------------------------------- */
+
+  :root {
+    --shell: calc(100% - 4cm);
+  }
+
+
+  /* ---------------------------------------------------------
+     HERO
+     --------------------------------------------------------- */
+
+  .hero-container {
+    width: var(--shell) !important;
+    max-width: none !important;
+
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .hero-content {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     INDICADORES
+     Um pouco mais largos, como no modelo aprovado
+     --------------------------------------------------------- */
+
+  .numbers {
+    width: min(
+      calc(100% - 2cm),
+      1280px
+    ) !important;
+
+    max-width: 1280px !important;
+
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     SEÇÕES PRINCIPAIS
+     Mantêm 100% da largura disponível dentro do MAIN
+     --------------------------------------------------------- */
+
+  body > main > section {
+    width: 100% !important;
+    max-width: none !important;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+
+    box-sizing: border-box !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     SEÇÕES INTERNAS QUE USAM O SHELL
+     --------------------------------------------------------- */
+
+  .section-heading,
+  .services-grid,
+  .process-grid,
+  .partners-content,
+  .partners-track,
+  .cta-container,
+  .footer-container {
+    max-width: none;
+  }
+
+
+  /* ---------------------------------------------------------
+     CTA
+     Continua mais estreito e elegante
+     --------------------------------------------------------- */
+
+  .cta {
+    width: calc(100% - 2cm) !important;
+
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     ACABAMENTO DA MOLDURA
+     --------------------------------------------------------- */
+
+  body > header {
+    border-left:
+      1px solid rgba(10, 40, 70, 0.06);
+
+    border-right:
+      1px solid rgba(10, 40, 70, 0.06);
+  }
+
+  body > main {
+    box-shadow:
+      0 0 28px rgba(16, 35, 55, 0.035);
+  }
+
+  body > footer {
+    border-left:
+      1px solid rgba(10, 40, 70, 0.06);
+
+    border-right:
+      1px solid rgba(10, 40, 70, 0.06);
+  }
+
+}
+
+/* SALA02-LAYOUT-OFICIAL-FIM */

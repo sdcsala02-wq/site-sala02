@@ -28,9 +28,16 @@ app.use(express.json({ limit: "2mb" }));
 
 app.use("/api/auth", authRoutes);
 
-const JWT_SECRET = process.env.JWT_SECRET || "SALA02_SUPER_SEGURA_2026";
-const CEO_USUARIO = process.env.CEO_USUARIO || "ceo";
-const CEO_SENHA = process.env.CEO_SENHA || "123456";
+const JWT_SECRET = process.env.JWT_SECRET;
+const CEO_USUARIO = process.env.CEO_USUARIO;
+const CEO_SENHA = process.env.CEO_SENHA;
+
+if (!JWT_SECRET || !CEO_USUARIO || !CEO_SENHA) {
+  throw new Error(
+    "Servidor legado exige JWT_SECRET, CEO_USUARIO e CEO_SENHA."
+  );
+}
+
 const CEO_SENHA_HASH = bcrypt.hashSync(CEO_SENHA, 10);
 
 const RECAPTCHA_ATIVO = process.env.RECAPTCHA_ATIVO === "true";

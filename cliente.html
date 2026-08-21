@@ -411,6 +411,64 @@
   pointer-events: none;
 }
 
+
+/* OLHO-SENHA-CLIENTE-SALA02 */
+
+.senha-wrapper-sala02 {
+  position: relative;
+  width: 100%;
+}
+
+.senha-wrapper-sala02 input {
+  width: 100%;
+  padding-right: 48px !important;
+  box-sizing: border-box;
+}
+
+.olho-senha-sala02 {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+
+  transform: translateY(-50%);
+
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  border-radius: 50% !important;
+
+  background: transparent !important;
+  color: #0b2848 !important;
+
+  box-shadow: none !important;
+
+  cursor: pointer;
+  z-index: 5;
+}
+
+.olho-senha-sala02:hover {
+  background: rgba(11, 40, 72, 0.08) !important;
+}
+
+.olho-senha-sala02:focus-visible {
+  outline: 2px solid #d6a857;
+  outline-offset: 1px;
+}
+
+.olho-senha-sala02 svg {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
 </style>
   <link rel="stylesheet" href="css/cookie-consent.css">
   <link rel="stylesheet" href="css/cliente-portal.css">
@@ -662,6 +720,143 @@ document.addEventListener(
           );
         }
       );
+  }
+);
+</script>
+
+<script>
+/* OLHO-SENHA-CLIENTE-SALA02 */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    const campoSenha =
+      document.querySelector(
+        'input[type="password"]'
+      );
+
+    if (!campoSenha) {
+      return;
+    }
+
+    if (
+      campoSenha.dataset.olhoSenhaSala02 ===
+      "ativo"
+    ) {
+      return;
+    }
+
+    campoSenha.dataset.olhoSenhaSala02 =
+      "ativo";
+
+    const wrapper =
+      document.createElement("div");
+
+    wrapper.className =
+      "senha-wrapper-sala02";
+
+    campoSenha.parentNode.insertBefore(
+      wrapper,
+      campoSenha
+    );
+
+    wrapper.appendChild(
+      campoSenha
+    );
+
+    const botao =
+      document.createElement("button");
+
+    botao.type = "button";
+
+    botao.className =
+      "olho-senha-sala02";
+
+    botao.setAttribute(
+      "aria-label",
+      "Mostrar senha"
+    );
+
+    botao.setAttribute(
+      "title",
+      "Mostrar senha"
+    );
+
+    const olhoAberto = `
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+    `;
+
+    const olhoFechado = `
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M3 3l18 18"></path>
+        <path d="M10.6 10.6a2 2 0 002.8 2.8"></path>
+        <path d="M9.9 4.2A10.8 10.8 0 0112 4c6.5 0 10 8 10 8a18.7 18.7 0 01-2.1 3.2"></path>
+        <path d="M6.6 6.6C3.8 8.5 2 12 2 12s3.5 8 10 8a9.8 9.8 0 004.1-.9"></path>
+      </svg>
+    `;
+
+    botao.innerHTML =
+      olhoAberto;
+
+    botao.addEventListener(
+      "click",
+      () => {
+
+        const mostrando =
+          campoSenha.type === "text";
+
+        campoSenha.type =
+          mostrando
+            ? "password"
+            : "text";
+
+        botao.innerHTML =
+          mostrando
+            ? olhoAberto
+            : olhoFechado;
+
+        const texto =
+          mostrando
+            ? "Mostrar senha"
+            : "Ocultar senha";
+
+        botao.setAttribute(
+          "aria-label",
+          texto
+        );
+
+        botao.setAttribute(
+          "title",
+          texto
+        );
+
+        campoSenha.focus();
+      }
+    );
+
+    wrapper.appendChild(
+      botao
+    );
   }
 );
 </script>
